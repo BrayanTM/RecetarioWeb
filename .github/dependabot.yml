@@ -1,0 +1,33 @@
+# Configuración de Dependabot para mantener las dependencias actualizadas
+# https://docs.github.com/en/code-security/dependabot/dependabot-version-updates
+
+version: 2
+updates:
+  # Mantener las GitHub Actions actualizadas
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+
+  # Mantener las dependencias de Python actualizadas
+  - package-ecosystem: "pip"
+    directory: "/backend"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+    # Agrupar actualizaciones menores y patches
+    groups:
+      django-dependencies:
+        patterns:
+          - "django*"
+      development-dependencies:
+        patterns:
+          - "pytest*"
+          - "black"
+          - "flake8"
+          - "isort"

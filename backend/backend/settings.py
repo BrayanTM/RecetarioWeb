@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 from dotenv import load_dotenv
 import os
+import sys
 
 # Load environment variables from .env file
 load_dotenv()
@@ -26,8 +27,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('SECRET_KEY')
+
+# Allow SECRET_KEY to be optional only during testing/CI
 if not SECRET_KEY:
-    raise ValueError("SECRET_KEY must be set in .env file")
+    if 'test' in sys.argv or 'CI' in os.environ:
+        SECRET_KEY = 'test-secret-key-only-for-testing'
+    else:
+        raise ValueError("SECRET_KEY must be set in .env file")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
