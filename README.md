@@ -9,6 +9,7 @@ Aplicación web de recetas desarrollada con Django.
 - Python 3.12+
 - Git
 - pip (gestor de paquetes de Python)
+- **Docker Desktop** (para PostgreSQL)
 
 ## 🚀 Instalación y Configuración
 
@@ -57,19 +58,31 @@ python -c "from django.core.management.utils import get_random_secret_key; print
 
 Copia el resultado y pégalo en tu archivo `.env` en la variable `SECRET_KEY`.
 
-### 5. Ejecutar migraciones
+### 5. Iniciar PostgreSQL con Docker
+
+```bash
+# Asegúrate de que Docker Desktop esté corriendo
+
+# Desde la raíz del proyecto
+docker-compose up -d
+
+# Verificar que esté corriendo
+docker-compose ps
+```
+
+### 6. Ejecutar migraciones
 
 ```bash
 python manage.py migrate
 ```
 
-### 6. Crear superusuario (opcional)
+### 7. Crear superusuario (opcional)
 
 ```bash
 python manage.py createsuperuser
 ```
 
-### 7. Ejecutar servidor de desarrollo
+### 8. Ejecutar servidor de desarrollo
 
 ```bash
 python manage.py runserver
@@ -102,7 +115,7 @@ python manage.py check --deploy
 RecetarioWeb/
 ├── .github/
 │   └── workflows/
-│       └── CI_Django_Vue.yml    # GitHub Actions CI/CD
+│       └── django-ci.yml        # GitHub Actions CI/CD
 ├── backend/
 │   ├── backend/                 # Configuración Django
 │   │   ├── settings.py
@@ -111,6 +124,7 @@ RecetarioWeb/
 │   ├── home/                    # App principal
 │   ├── manage.py
 │   └── requirements.txt         # Dependencias Python
+├── docker-compose.yml           # Configuración PostgreSQL
 ├── .env.example                 # Plantilla de variables de entorno
 ├── .gitignore
 └── LICENSE
@@ -123,6 +137,12 @@ RecetarioWeb/
 - `SECRET_KEY`: Clave secreta de Django (obligatoria)
 - `DEBUG`: Modo debug (True/False)
 - `DJANGO_ALLOWED_HOSTS`: Hosts permitidos (separados por comas)
+- `DATABASE_URL`: URL de conexión a PostgreSQL
+
+### Base de Datos
+
+- 🐘 **PostgreSQL 16** con Docker
+- 📦 Puerto: `5433` (local) → `5432` (contenedor)
 
 ### GitHub Actions
 

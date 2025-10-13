@@ -1,28 +1,9 @@
-# Django Framework
+asgiref==3.10.0
+dj-database-url==2.3.0
 Django==5.2.7
-
-# Environment variables
+djangorestframework==3.16.1
+psycopg2-binary==2.9.10
 python-dotenv==1.1.1
-
-# Database (if you plan to use PostgreSQL in production)
-# psycopg2-binary==2.9.9
-
-# ASGI server for production
-# daphne==4.1.0
-# uvicorn==0.27.0
-
-# Django REST Framework (uncomment if using APIs)
-# djangorestframework==3.14.0
-
-# CORS headers (uncomment if using frontend separately)
-# django-cors-headers==4.3.1
-
-# Testing
-# pytest==8.0.0
-# pytest-django==4.7.0
-# pytest-cov==4.1.0
-
-# Code quality (optional)
-# black==24.1.0
-# flake8==7.0.0
-# isort==5.13.2
+sqlparse==0.5.3
+typing_extensions==4.15.0
+tzdata==2025.2
