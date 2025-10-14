@@ -1,27 +1,25 @@
 from rest_framework.views import APIView
 from django.http import JsonResponse, Http404
 from http import HTTPStatus
-from django.utils.text import slugify
 from .models import Category
 from .serializers import CategorySerializer
+from recipes.models import Recipe
 
 
 # Create your views here.
 class CategoryList(APIView):
     def get(self, request):
-        data = Category.objects.order_by('-id').all()
-        serializer = CategorySerializer(data, many=True)
+        categories = Category.objects.order_by('-id').all()
+        serializer = CategorySerializer(categories, many=True)
         return JsonResponse({'categories': serializer.data}, status=HTTPStatus.OK)
     
 
     def post(self, request):
-        if request.data.get('name') is None or not request.data.get('name').strip():
-            return JsonResponse({'error': 'Name is required'}, status=HTTPStatus.BAD_REQUEST)
-        try:
-            Category.objects.create(name=request.data.get('name'))
-            return JsonResponse({'message': 'Category created successfully'}, status=HTTPStatus.CREATED)
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
+        serializer = CategorySerializer(data=request.data)
+        if serializer.is_valid():
+            category = serializer.save()
+            return JsonResponse({'category': CategorySerializer(category).data}, status=HTTPStatus.CREATED)
+        return JsonResponse({'errors': serializer.errors}, status=HTTPStatus.BAD_REQUEST)
 
 
 class CategoryDetail(APIView):
@@ -35,27 +33,25 @@ class CategoryDetail(APIView):
 
 
     def put(self, request, pk):
-        if request.data.get('name') is None or not request.data.get('name').strip():
-            return JsonResponse({'error': 'Name is required'}, status=HTTPStatus.BAD_REQUEST)
         try:
             category = Category.objects.get(pk=pk)
-            category.name = request.data.get('name')
-            category.slug = slugify(request.data.get('name'))
-            category.save()
-            return JsonResponse({'message': 'Category updated successfully'}, status=HTTPStatus.OK)
+            serializer = CategorySerializer(category, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return JsonResponse({'category': serializer.data}, status=HTTPStatus.OK)
+            return JsonResponse({'errors': serializer.errors}, status=HTTPStatus.BAD_REQUEST)
         except Category.DoesNotExist:
             return JsonResponse({'error': 'Category not found'}, status=HTTPStatus.NOT_FOUND)
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
 
 
     def delete(self, request, pk):
         try:
             category = Category.objects.get(pk=pk)
-            category.delete()
-            return JsonResponse({'message': 'Category deleted successfully'}, status=HTTPStatus.OK)
         except Category.DoesNotExist:
             return JsonResponse({'error': 'Category not found'}, status=HTTPStatus.NOT_FOUND)
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
+        # No permitir eliminar si hay recetas asociadas
+        if Recipe.objects.filter(category=category).exists():
+            return JsonResponse({'error': 'Cannot delete category with associated recipes'}, status=HTTPStatus.BAD_REQUEST)
 
+        category.delete()
+        return JsonResponse({'message': 'Category deleted successfully'}, status=HTTPStatus.OK)
