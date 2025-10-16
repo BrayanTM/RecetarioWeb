@@ -93,7 +93,42 @@ La aplicación estará disponible en: `http://localhost:8000`
 
 El panel de administración en: `http://localhost:8000/admin`
 
-## 🔒 Seguridad
+## � Configuración de Email (Mailtrap)
+
+La aplicación utiliza SMTP para enviar correos electrónicos cuando un usuario envía un mensaje a través del formulario de contacto.
+
+### Configuración para Desarrollo (Mailtrap)
+
+1. Crea una cuenta gratuita en [Mailtrap.io](https://mailtrap.io/)
+2. En tu inbox de Mailtrap, ve a **SMTP Settings**
+3. Copia las credenciales y agrégalas a tu archivo `.env`:
+
+```bash
+SMTP_SERVER=sandbox.smtp.mailtrap.io
+SMTP_PORT=2525
+SMTP_USERNAME=tu_usuario_mailtrap
+SMTP_PASSWORD=tu_contraseña_mailtrap
+```
+
+### Configuración para Producción
+
+Para producción, puedes usar servicios como:
+- **Gmail** (con contraseña de aplicación)
+- **SendGrid**
+- **AWS SES**
+- **Mailgun**
+
+Ejemplo con Gmail:
+```bash
+SMTP_SERVER=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USERNAME=tu_email@gmail.com
+SMTP_PASSWORD=tu_contraseña_de_aplicacion
+```
+
+**Nota:** Para Gmail, necesitas crear una [contraseña de aplicación](https://support.google.com/accounts/answer/185833).
+
+## �🔒 Seguridad
 
 - ✅ **NO** commitees el archivo `.env` a git
 - ✅ Usa SECRET_KEY únicas para cada entorno
@@ -132,6 +167,13 @@ RecetarioWeb/
 │   │   ├── serializers.py       # Serializador REST
 │   │   ├── views.py             # Vistas API
 │   │   └── urls.py              # Rutas de recetas
+│   ├── contact/                 # App de contacto
+│   │   ├── models.py            # Modelo ContactMessage
+│   │   ├── serializers.py       # Serializador REST
+│   │   ├── views.py             # Vistas API
+│   │   └── urls.py              # Rutas de contacto
+│   ├── utilities/               # Utilidades generales
+│   │   └── utilities.py         # Funciones de utilidad (envío de emails)
 │   ├── home/                    # App principal
 │   ├── example/                 # App de ejemplo
 │   ├── uploads/                 # Archivos subidos
@@ -157,17 +199,18 @@ RecetarioWeb/
 - ✅ GET - Listar todas las categorías
 - ✅ POST - Crear nueva categoría
 - ✅ GET - Obtener categoría por ID (`/api/v1/categories/<id>/`)
-- ✅ PUT - Actualizar categoría completa
-- ✅ PATCH - Actualizar categoría parcial
+- ✅ PUT - Actualizar categoría parcial
 - ✅ DELETE - Eliminar categoría
 
 **Recetas** (`/api/v1/recipes/`)
 - ✅ GET - Listar todas las recetas
 - ✅ POST - Crear nueva receta
 - ✅ GET - Obtener receta por ID (`/api/v1/recipes/<id>/`)
-- ✅ PUT - Actualizar receta completa
-- ✅ PATCH - Actualizar receta parcial
+- ✅ PUT - Actualizar receta parcial
 - ✅ DELETE - Eliminar receta
+
+**Contacto** (`/api/v1/contact/`)
+- ✅ POST - Enviar mensaje de contacto (con notificación por email)
 
 #### 📊 Modelos de Base de Datos
 
@@ -184,16 +227,33 @@ RecetarioWeb/
 - `description`: Descripción detallada
 - `created_at`: Fecha de creación (auto)
 
+**ContactMessage**
+- `name`: Nombre del usuario (máx. 100 caracteres)
+- `email`: Email del usuario
+- `phone`: Teléfono del usuario (máx. 12 caracteres)
+- `message`: Mensaje del usuario
+- `created_at`: Fecha de creación (auto)
+
 ### Variables de entorno
 
+#### Django
 - `SECRET_KEY`: Clave secreta de Django (obligatoria)
 - `DEBUG`: Modo debug (True/False)
 - `DJANGO_ALLOWED_HOSTS`: Hosts permitidos (separados por comas)
+- `BASE_URL`: URL base de la aplicación
+
+#### Base de Datos
 - `DATABASE_URL`: URL de conexión a PostgreSQL
 - `POSTGRES_DB`: Nombre de la base de datos
 - `POSTGRES_USER`: Usuario de PostgreSQL
 - `POSTGRES_PASSWORD`: Contraseña de PostgreSQL
 - `POSTGRES_PORT`: Puerto de PostgreSQL (5433 por defecto)
+
+#### Correo Electrónico (SMTP)
+- `SMTP_SERVER`: Servidor SMTP (ej: sandbox.smtp.mailtrap.io)
+- `SMTP_PORT`: Puerto del servidor SMTP (2525 o 587)
+- `SMTP_USERNAME`: Usuario de autenticación SMTP
+- `SMTP_PASSWORD`: Contraseña de autenticación SMTP
 
 ### Base de Datos
 
@@ -273,6 +333,21 @@ PATCH /api/v1/recipes/<id>/
 
 # Eliminar receta
 DELETE /api/v1/recipes/<id>/
+```
+
+### Contacto
+```bash
+# Enviar mensaje de contacto
+POST /api/v1/contact/
+{
+  "name": "Juan Pérez",
+  "email": "juan@example.com",
+  "phone": "12345678",
+  "message": "Hola, me gustaría más información sobre..."
+}
+
+# Nota: Este endpoint también envía un email de notificación
+# al administrador configurado en las variables de entorno SMTP
 ```
 
 ## 🐛 Solución de Problemas
