@@ -59,6 +59,12 @@ python -c "from django.core.management.utils import get_random_secret_key; print
 
 Copia el resultado y pégalo en tu archivo `.env` en la variable `SECRET_KEY`.
 
+**Configuración adicional requerida:**
+
+Asegúrate de configurar también en tu `.env`:
+- `BASE_URL_FRONTEND`: URL de tu aplicación frontend (ej: `http://localhost:3000/`)
+- `JWT_ALGORITHM`: Algoritmo para JWT, usa `HS256`
+
 ### 5. Iniciar PostgreSQL con Docker
 
 ```bash
@@ -74,6 +80,13 @@ docker-compose ps
 ### 6. Ejecutar migraciones
 
 ```bash
+python manage.py migrate
+```
+
+**Nota:** Si agregaste la app `security` después de la configuración inicial, asegúrate de crear las migraciones:
+
+```bash
+python manage.py makemigrations security
 python manage.py migrate
 ```
 
@@ -128,12 +141,15 @@ SMTP_PASSWORD=tu_contraseña_de_aplicacion
 
 **Nota:** Para Gmail, necesitas crear una [contraseña de aplicación](https://support.google.com/accounts/answer/185833).
 
-## �🔒 Seguridad
+## 🔒 Seguridad
 
 - ✅ **NO** commitees el archivo `.env` a git
 - ✅ Usa SECRET_KEY únicas para cada entorno
 - ✅ Establece `DEBUG=False` en producción
 - ✅ Configura correctamente `ALLOWED_HOSTS` en producción
+- ✅ **Autenticación JWT**: Los endpoints críticos están protegidos con JSON Web Tokens
+- ✅ **Verificación de email**: Los usuarios deben verificar su correo antes de acceder
+- ✅ **Tokens de corta duración**: Los JWT expiran en 24 horas para mayor seguridad
 
 ## 🧪 Pruebas
 
@@ -172,6 +188,11 @@ RecetarioWeb/
 │   │   ├── serializers.py       # Serializador REST
 │   │   ├── views.py             # Vistas API
 │   │   └── urls.py              # Rutas de contacto
+│   ├── security/                # App de seguridad y autenticación
+│   │   ├── models.py            # Modelo UsersMetadata
+│   │   ├── views.py             # Vistas de registro, login y verificación
+│   │   ├── decorators.py        # Decoradores JWT para proteger rutas
+│   │   └── urls.py              # Rutas de seguridad
 │   ├── utilities/               # Utilidades generales
 │   │   └── utilities.py         # Funciones de utilidad (envío de emails)
 │   ├── home/                    # App principal
@@ -212,6 +233,12 @@ RecetarioWeb/
 **Contacto** (`/api/v1/contact/`)
 - ✅ POST - Enviar mensaje de contacto (con notificación por email)
 
+**Seguridad y Autenticación** (`/api/v1/security/`)
+- ✅ POST - Registro de usuarios con verificación por email (`/api/v1/security/register/`)
+- ✅ GET - Verificación de email mediante token (`/api/v1/security/verify/<token>/`)
+- ✅ POST - Login de usuarios con generación de JWT (`/api/v1/security/login/`)
+- ✅ Decorador JWT para proteger endpoints (aplicado en rutas de recetas)
+
 #### 📊 Modelos de Base de Datos
 
 **Category**
@@ -234,6 +261,10 @@ RecetarioWeb/
 - `message`: Mensaje del usuario
 - `created_at`: Fecha de creación (auto)
 
+**UsersMetadata**
+- `user`: Relación con User de Django (ForeignKey)
+- `token`: Token de verificación de email (UUID)
+
 ### Variables de entorno
 
 #### Django
@@ -241,6 +272,10 @@ RecetarioWeb/
 - `DEBUG`: Modo debug (True/False)
 - `DJANGO_ALLOWED_HOSTS`: Hosts permitidos (separados por comas)
 - `BASE_URL`: URL base de la aplicación
+- `BASE_URL_FRONTEND`: URL del frontend (para redirección después de verificación de email)
+
+#### JWT (Autenticación)
+- `JWT_ALGORITHM`: Algoritmo para firmar tokens JWT (ej: HS256)
 
 #### Base de Datos
 - `DATABASE_URL`: URL de conexión a PostgreSQL
@@ -271,6 +306,10 @@ RecetarioWeb/
 - **django-autoslug 1.9.9** - Generación automática de slugs
 - **python-dotenv 1.1.1** - Gestión de variables de entorno
 - **dj-database-url 2.3.0** - Configuración de base de datos
+- **python-jose 3.5.0** - Manejo de tokens JWT (JSON Web Tokens)
+- **ecdsa 0.19.1** - Algoritmos de firma digital para JWT
+- **rsa 4.9.1** - Criptografía RSA para JWT
+- **pyasn1 0.6.1** - Soporte ASN.1 para criptografía
 
 ### GitHub Actions
 
@@ -350,6 +389,84 @@ POST /api/v1/contact/
 # al administrador configurado en las variables de entorno SMTP
 ```
 
+### Seguridad y Autenticación
+
+#### Registro de Usuario
+```bash
+POST /api/v1/security/register/
+{
+  "username": "juanperez",
+  "password": "tu_contraseña_segura",
+  "email": "juan@example.com",
+  "first_name": "Juan",
+  "last_name": "Pérez"
+}
+
+# Respuesta:
+{
+  "message": "User registered successfully. Please verify your email.",
+  "verification_url": "http://localhost:8000/api/v1/security/verify/<token>/"
+}
+
+# Nota: Se enviará un email de verificación a la dirección proporcionada
+```
+
+#### Verificación de Email
+```bash
+GET /api/v1/security/verify/<token>/
+
+# Este endpoint es llamado automáticamente cuando el usuario hace clic
+# en el enlace del email de verificación. Redirige al frontend después
+# de activar la cuenta.
+```
+
+#### Login
+```bash
+POST /api/v1/security/login/
+{
+  "email": "juan@example.com",
+  "password": "tu_contraseña_segura"
+}
+
+# Respuesta exitosa:
+{
+  "user_id": "123",
+  "name": "Juan",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+
+# El token JWT debe ser incluido en las peticiones protegidas
+# usando el header: Authorization: Bearer <token>
+```
+
+#### Uso del Token JWT
+
+Para acceder a endpoints protegidos (como crear, actualizar o eliminar recetas):
+
+```bash
+# Ejemplo: Crear una receta (requiere autenticación)
+POST /api/v1/recipes/
+Headers:
+  Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+  Content-Type: multipart/form-data
+
+Body:
+{
+  "category": 1,
+  "name": "Pastel de Chocolate",
+  "time": "45 minutos",
+  "file": <imagen>,
+  "description": "Delicioso pastel..."
+}
+```
+
+**Endpoints protegidos con JWT:**
+- `POST /api/v1/recipes/` - Crear receta
+- `PUT /api/v1/recipes/<id>/` - Actualizar receta
+- `DELETE /api/v1/recipes/<id>/` - Eliminar receta
+
+**Nota:** El token JWT expira después de 24 horas. El usuario deberá iniciar sesión nuevamente.
+
 ## 🐛 Solución de Problemas
 
 ### Error de conexión a PostgreSQL
@@ -384,6 +501,31 @@ source .venv/bin/activate  # Linux/Mac
 
 # Reinstalar
 pip install -r requirements.txt --upgrade
+```
+
+### Error de autenticación JWT
+
+```bash
+# Error: "Authorization header missing"
+# Asegúrate de incluir el header Authorization en tus peticiones:
+# Authorization: Bearer <tu_token_jwt>
+
+# Error: "Token has expired"
+# El token JWT expira en 24 horas. Inicia sesión nuevamente para obtener un nuevo token.
+
+# Error: Token generation failed
+# Verifica que JWT_ALGORITHM esté configurado correctamente en .env (usa HS256)
+```
+
+### Usuario no puede iniciar sesión
+
+```bash
+# Error: "Account is not active. Please verify your email."
+# El usuario debe verificar su email haciendo clic en el enlace enviado.
+# Verifica la configuración SMTP y revisa Mailtrap si estás en desarrollo.
+
+# Error: "Invalid credentials"
+# Verifica que el email y contraseña sean correctos.
 ```
 
 ## 📝 Licencia

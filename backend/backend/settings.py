@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'categories',
     'recipes',
     'contact',
+    'security',
 ]
 
 MIDDLEWARE = [
