@@ -16,7 +16,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         fields = ['id', 'name', 'slug', 'time', 'description', 'created_at', 'category', 'category_name', 'picture', 'picture_url']
-        read_only_fields = ['slug', 'created_at']
+        read_only_fields = ['id', 'slug', 'created_at']
 
 
     def get_picture_url(self, obj):
