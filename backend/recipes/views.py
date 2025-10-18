@@ -1,12 +1,14 @@
 from rest_framework.views import APIView
 from django.http import JsonResponse
 from django.core.files.storage import FileSystemStorage
+from django.contrib.auth.models import User
 from http import HTTPStatus
 from datetime import datetime
 import os
 from .models import Recipe
 from .serializers import RecipeSerializer
 from security.decorators import logging_decorator
+from jose import JWTError, jwt
 
 
 # Create your views here.
@@ -33,19 +35,25 @@ class RecipeListView(APIView):
         timestamp = datetime.now().timestamp()
         extension = os.path.splitext(uploaded_file.name)[1]
         filename = f"{int(timestamp)}{extension}"
-        
-        # Agregar el nombre del archivo a request.data para validación
-        request.data['picture'] = filename
 
-        # Validar primero con el serializador
+        # Obtener el usuario del token JWT
+        auth_header = request.headers.get('Authorization').split(' ')
+        try:
+            decoded_token = jwt.decode(auth_header[1], os.getenv("SECRET_KEY"), algorithms=[os.getenv("JWT_ALGORITHM")])
+            user_id = decoded_token.get('user_id')
+        except JWTError as e:
+            return JsonResponse({'error': 'Invalid token.'}, status=HTTPStatus.UNAUTHORIZED)
+
+        # Validar los datos del request (sin picture ni user)
         serializer = RecipeSerializer(data=request.data)
         if serializer.is_valid():
             # Solo si la validación es exitosa, guardar la imagen
             fs = FileSystemStorage()
             fs.save(f"recipes/{filename}", uploaded_file)
             
-            # Guardar la receta en la base de datos
-            recipe = serializer.save()
+            # Guardar la receta con los campos controlados por el servidor
+            user = User.objects.get(pk=user_id)
+            recipe = serializer.save(user=user, picture=filename)
             return JsonResponse({'recipe': RecipeSerializer(recipe).data}, status=HTTPStatus.CREATED)
         
         # Si la validación falla, NO se guarda la imagen
@@ -81,11 +89,8 @@ class RecipeDetailView(APIView):
                 timestamp = datetime.now().timestamp()
                 extension = os.path.splitext(uploaded_file.name)[1]
                 filename = f"{int(timestamp)}{extension}"
-                
-                # Agregar el nombre del archivo a request.data para validación
-                request.data['picture'] = filename
             
-            # Validar primero con el serializador
+            # Validar los datos del request (sin picture)
             serializer = RecipeSerializer(recipe, data=request.data, partial=True)
             if serializer.is_valid():
                 # Solo si la validación es exitosa, procesar la imagen
@@ -99,9 +104,13 @@ class RecipeDetailView(APIView):
                     # Guardar el nuevo archivo
                     fs = FileSystemStorage()
                     fs.save(f"recipes/{filename}", uploaded_file)
+                    
+                    # Guardar con el nuevo nombre de archivo
+                    serializer.save(picture=filename)
+                else:
+                    # Guardar sin modificar la imagen
+                    serializer.save()
                 
-                # Guardar los cambios en la base de datos
-                serializer.save()
                 return JsonResponse({'recipe': serializer.data}, status=HTTPStatus.OK)
             
             # Si la validación falla, NO se modifica la imagen
