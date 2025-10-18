@@ -27,6 +27,7 @@ urlpatterns = [
     path('api/v1/', include('recipes.urls')),
     path('api/v1/', include('contact.urls')),
     path('api/v1/', include('security.urls')),
+    path('api/v1/', include('recipe_helper.urls')),
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -193,6 +193,9 @@ RecetarioWeb/
 │   │   ├── views.py             # Vistas de registro, login y verificación
 │   │   ├── decorators.py        # Decoradores JWT para proteger rutas
 │   │   └── urls.py              # Rutas de seguridad
+│   ├── recipe_helper/           # App auxiliar para endpoints del frontend
+│   │   ├── views.py             # Vistas de panel de usuario, búsqueda y home
+│   │   └── urls.py              # Rutas auxiliares de recetas
 │   ├── utilities/               # Utilidades generales
 │   │   └── utilities.py         # Funciones de utilidad (envío de emails)
 │   ├── home/                    # App principal
@@ -225,10 +228,16 @@ RecetarioWeb/
 
 **Recetas** (`/api/v1/recipes/`)
 - ✅ GET - Listar todas las recetas
-- ✅ POST - Crear nueva receta
+- ✅ POST - Crear nueva receta (requiere autenticación JWT)
 - ✅ GET - Obtener receta por ID (`/api/v1/recipes/<id>/`)
-- ✅ PUT - Actualizar receta parcial
-- ✅ DELETE - Eliminar receta
+- ✅ PUT - Actualizar receta parcial (requiere autenticación JWT)
+- ✅ DELETE - Eliminar receta (requiere autenticación JWT)
+
+**Recipe Helper** (`/api/v1/`)
+- ✅ GET - Panel de recetas por usuario (`/api/v1/recipes-panel/<user_id>/`)
+- ✅ GET - Detalle de receta por slug (`/api/v1/recipes/slug/<slug>/`)
+- ✅ GET - Recetas aleatorias para home (`/api/v1/recipes/home/`)
+- ✅ GET - Búsqueda de recetas por categoría (`/api/v1/recipes/search/?category_id=<id>&search=<query>`)
 
 **Contacto** (`/api/v1/contact/`)
 - ✅ POST - Enviar mensaje de contacto (con notificación por email)
@@ -246,6 +255,7 @@ RecetarioWeb/
 - `slug`: URL amigable (auto-generado)
 
 **Recipe**
+- `user`: Relación con User (ForeignKey) - Usuario propietario de la receta
 - `category`: Relación con Category (ForeignKey)
 - `name`: Nombre de la receta (único)
 - `slug`: URL amigable (auto-generado)
@@ -350,28 +360,59 @@ DELETE /api/v1/categories/<id>/
 
 ### Recetas
 ```bash
-# Listar todas las recetas
+# Listar todas las recetas (administración)
 GET /api/v1/recipes/
 
-# Crear nueva receta
+# Crear nueva receta (requiere autenticación JWT)
 POST /api/v1/recipes/
+Headers:
+  Authorization: Bearer <token>
+  Content-Type: multipart/form-data
+Body:
 {
   "category": 1,
   "name": "Pastel de Chocolate",
   "time": "45 minutos",
-  "picture": "path/to/image.jpg",
+  "file": <imagen>,
   "description": "Delicioso pastel..."
 }
+# Nota: El campo 'user' se asigna automáticamente desde el token JWT
 
-# Obtener una receta
+# Obtener una receta por ID (administración)
 GET /api/v1/recipes/<id>/
 
-# Actualizar receta
+# Actualizar receta (requiere autenticación JWT)
 PUT /api/v1/recipes/<id>/
-PATCH /api/v1/recipes/<id>/
+Headers:
+  Authorization: Bearer <token>
+  Content-Type: multipart/form-data
 
-# Eliminar receta
+# Eliminar receta (requiere autenticación JWT)
 DELETE /api/v1/recipes/<id>/
+Headers:
+  Authorization: Bearer <token>
+```
+
+### Recipe Helper (Endpoints para Frontend)
+```bash
+# Panel de recetas del usuario
+GET /api/v1/recipes-panel/<user_id>/
+# Retorna todas las recetas creadas por un usuario específico
+
+# Detalle de receta por slug (para URLs amigables)
+GET /api/v1/recipes/slug/<slug>/
+# Ejemplo: /api/v1/recipes/slug/pastel-de-chocolate/
+
+# Recetas aleatorias para página de inicio
+GET /api/v1/recipes/home/
+# Retorna 3 recetas aleatorias
+
+# Búsqueda de recetas por categoría
+GET /api/v1/recipes/search/?category_id=<id>&search=<query>
+# Parámetros:
+#   - category_id: ID de la categoría (requerido)
+#   - search: Término de búsqueda en el nombre (opcional, puede estar vacío)
+# Ejemplo: /api/v1/recipes/search/?category_id=1&search=chocolate
 ```
 
 ### Contacto
@@ -458,12 +499,21 @@ Body:
   "file": <imagen>,
   "description": "Delicioso pastel..."
 }
+
+# Nota: El campo 'user' se asigna automáticamente desde el token JWT
+# No es necesario incluirlo en la petición
 ```
 
 **Endpoints protegidos con JWT:**
-- `POST /api/v1/recipes/` - Crear receta
+- `POST /api/v1/recipes/` - Crear receta (el usuario se asigna automáticamente)
 - `PUT /api/v1/recipes/<id>/` - Actualizar receta
 - `DELETE /api/v1/recipes/<id>/` - Eliminar receta
+- `GET /api/v1/recipes-panel/<user_id>/` - Ver recetas de un usuario (con logging)
+
+**Endpoints públicos (Recipe Helper):**
+- `GET /api/v1/recipes/slug/<slug>/` - Ver detalle de receta por slug
+- `GET /api/v1/recipes/home/` - Obtener recetas aleatorias para home
+- `GET /api/v1/recipes/search/` - Buscar recetas por categoría
 
 **Nota:** El token JWT expira después de 24 horas. El usuario deberá iniciar sesión nuevamente.
 
