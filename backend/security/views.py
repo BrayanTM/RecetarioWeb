@@ -10,12 +10,41 @@ from jose import JWTError, jwt
 import uuid
 import os
 import time
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 
 #from .serializers import 
 
 
 # Create your views here.
 class SecurityRegisterView(APIView):
+    @swagger_auto_schema(
+        operation_description="Register a new user. Sends a verification email.",
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            required=['username', 'password', 'email', 'first_name', 'last_name'],
+            properties={
+                'username': openapi.Schema(type=openapi.TYPE_STRING, description='Username'),
+                'password': openapi.Schema(type=openapi.TYPE_STRING, description='Password'),
+                'email': openapi.Schema(type=openapi.TYPE_STRING, description='Email address'),
+                'first_name': openapi.Schema(type=openapi.TYPE_STRING, description='First name'),
+                'last_name': openapi.Schema(type=openapi.TYPE_STRING, description='Last name'),
+            }
+        ),
+        responses={
+            201: openapi.Response(
+                description="User registered successfully",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'message': openapi.Schema(type=openapi.TYPE_STRING),
+                        'verification_url': openapi.Schema(type=openapi.TYPE_STRING)
+                    }
+                )
+            ),
+            400: 'Bad Request - Invalid data or email already in use'
+        }
+    )
     def post(self, request):
         # Implement registration logic here
         if request.data.get('username') == None or not request.data.get('username').strip():
@@ -56,6 +85,13 @@ class SecurityRegisterView(APIView):
 
 
 class SecurityVerifyView(APIView):
+    @swagger_auto_schema(
+        operation_description="Verify user email with the provided token. Redirects to frontend on success.",
+        responses={
+            302: 'Redirect to frontend',
+            400: 'Bad Request - Invalid token or user not found'
+        }
+    )
     def get(self, request, token):
         if token == None or not str(token).strip():
             return JsonResponse({"error": "Token is required"}, status=HTTPStatus.BAD_REQUEST)
@@ -74,6 +110,32 @@ class SecurityVerifyView(APIView):
 
 
 class SecurityLoginView(APIView):
+    @swagger_auto_schema(
+        operation_description="Login with email and password. Returns JWT token on success.",
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            required=['email', 'password'],
+            properties={
+                'email': openapi.Schema(type=openapi.TYPE_STRING, description='Email address'),
+                'password': openapi.Schema(type=openapi.TYPE_STRING, description='Password'),
+            }
+        ),
+        responses={
+            200: openapi.Response(
+                description="Login successful",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'user_id': openapi.Schema(type=openapi.TYPE_STRING),
+                        'name': openapi.Schema(type=openapi.TYPE_STRING),
+                        'token': openapi.Schema(type=openapi.TYPE_STRING, description='JWT token')
+                    }
+                )
+            ),
+            401: 'Unauthorized - Invalid credentials or account not active',
+            500: 'Internal Server Error - Token generation failed'
+        }
+    )
     def post(self, request):
         # Implement login logic here
         if request.data.get('email') == None or not request.data.get('email').strip():

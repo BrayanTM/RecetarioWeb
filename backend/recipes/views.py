@@ -9,17 +9,97 @@ from .models import Recipe
 from .serializers import RecipeSerializer
 from security.decorators import logging_decorator
 from jose import JWTError, jwt
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 
 
 # Create your views here.
 class RecipeListView(APIView):
     
+    @swagger_auto_schema(
+        operation_description="Get all recipes ordered by ID (descending)",
+        responses={
+            200: openapi.Response(
+                description="List of recipes",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'recipes': openapi.Schema(
+                            type=openapi.TYPE_ARRAY,
+                            items=openapi.Schema(type=openapi.TYPE_OBJECT)
+                        )
+                    }
+                )
+            )
+        }
+    )
     def get(self, request):
         recipes = Recipe.objects.order_by('-id').all()
         serializer = RecipeSerializer(recipes, many=True)
         return JsonResponse({'recipes': serializer.data}, status=HTTPStatus.OK)
 
 
+    @swagger_auto_schema(
+        operation_description="Create a new recipe with image upload. Requires authentication. Use multipart/form-data.",
+        manual_parameters=[
+            openapi.Parameter(
+                'Authorization',
+                openapi.IN_HEADER,
+                description="JWT token (Bearer <token>)",
+                type=openapi.TYPE_STRING,
+                required=True
+            ),
+            openapi.Parameter(
+                'file',
+                openapi.IN_FORM,
+                description="Recipe image (JPEG or PNG)",
+                type=openapi.TYPE_FILE,
+                required=True
+            ),
+            openapi.Parameter(
+                'name',
+                openapi.IN_FORM,
+                description="Recipe name",
+                type=openapi.TYPE_STRING,
+                required=True
+            ),
+            openapi.Parameter(
+                'time',
+                openapi.IN_FORM,
+                description="Cooking time",
+                type=openapi.TYPE_STRING,
+                required=True
+            ),
+            openapi.Parameter(
+                'description',
+                openapi.IN_FORM,
+                description="Recipe description",
+                type=openapi.TYPE_STRING,
+                required=True
+            ),
+            openapi.Parameter(
+                'category',
+                openapi.IN_FORM,
+                description="Category ID",
+                type=openapi.TYPE_INTEGER,
+                required=True
+            ),
+        ],
+        consumes=['multipart/form-data'],
+        responses={
+            201: openapi.Response(
+                description="Recipe created successfully",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'recipe': openapi.Schema(type=openapi.TYPE_OBJECT)
+                    }
+                )
+            ),
+            400: 'Bad Request - Invalid file or data',
+            401: 'Unauthorized - Invalid token',
+        }
+    )
     @logging_decorator()
     def post(self, request):
         # Validar el archivo antes de procesarlo
@@ -61,6 +141,21 @@ class RecipeListView(APIView):
 
 
 class RecipeDetailView(APIView):
+    @swagger_auto_schema(
+        operation_description="Get a specific recipe by ID",
+        responses={
+            200: openapi.Response(
+                description="Recipe details",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'recipe': openapi.Schema(type=openapi.TYPE_OBJECT)
+                    }
+                )
+            ),
+            404: 'Recipe not found'
+        }
+    )
     def get(self, request, pk):
         try:
             recipe = Recipe.objects.get(pk=pk)
@@ -70,6 +165,67 @@ class RecipeDetailView(APIView):
             return JsonResponse({'error': 'Recipe not found'}, status=HTTPStatus.NOT_FOUND)
 
 
+    @swagger_auto_schema(
+        operation_description="Update a recipe. Requires authentication. Can update image and/or recipe data. Use multipart/form-data. All fields are optional.",
+        manual_parameters=[
+            openapi.Parameter(
+                'Authorization',
+                openapi.IN_HEADER,
+                description="JWT token (Bearer <token>)",
+                type=openapi.TYPE_STRING,
+                required=True
+            ),
+            openapi.Parameter(
+                'file',
+                openapi.IN_FORM,
+                description="New recipe image (JPEG or PNG) - optional",
+                type=openapi.TYPE_FILE,
+                required=False
+            ),
+            openapi.Parameter(
+                'name',
+                openapi.IN_FORM,
+                description="Recipe name - optional",
+                type=openapi.TYPE_STRING,
+                required=False
+            ),
+            openapi.Parameter(
+                'time',
+                openapi.IN_FORM,
+                description="Cooking time - optional",
+                type=openapi.TYPE_STRING,
+                required=False
+            ),
+            openapi.Parameter(
+                'description',
+                openapi.IN_FORM,
+                description="Recipe description - optional",
+                type=openapi.TYPE_STRING,
+                required=False
+            ),
+            openapi.Parameter(
+                'category',
+                openapi.IN_FORM,
+                description="Category ID - optional",
+                type=openapi.TYPE_INTEGER,
+                required=False
+            ),
+        ],
+        consumes=['multipart/form-data'],
+        responses={
+            200: openapi.Response(
+                description="Recipe updated successfully",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'recipe': openapi.Schema(type=openapi.TYPE_OBJECT)
+                    }
+                )
+            ),
+            400: 'Bad Request - Invalid file or data',
+            404: 'Recipe not found'
+        }
+    )
     @logging_decorator()
     def put(self, request, pk):
         try:
@@ -119,6 +275,30 @@ class RecipeDetailView(APIView):
             return JsonResponse({'error': 'Recipe not found'}, status=HTTPStatus.NOT_FOUND)
 
 
+    @swagger_auto_schema(
+        operation_description="Delete a recipe and its associated image. Requires authentication.",
+        manual_parameters=[
+            openapi.Parameter(
+                'Authorization',
+                openapi.IN_HEADER,
+                description="JWT token (Bearer <token>)",
+                type=openapi.TYPE_STRING,
+                required=True
+            ),
+        ],
+        responses={
+            200: openapi.Response(
+                description="Recipe deleted successfully",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'message': openapi.Schema(type=openapi.TYPE_STRING)
+                    }
+                )
+            ),
+            404: 'Recipe not found'
+        }
+    )
     @logging_decorator()
     def delete(self, request, pk):
         try:

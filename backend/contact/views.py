@@ -3,12 +3,21 @@ from django.http import JsonResponse
 from http import HTTPStatus
 from .serializers import ContactMessageSerializer
 from utilities import utilities
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 
 
 # Create your views here.
 class ContactView(APIView):
 
-
+    @swagger_auto_schema(
+        operation_description="Submit a contact message",
+        request_body=ContactMessageSerializer,
+        responses={
+            201: ContactMessageSerializer,
+            400: 'Bad Request',
+        },
+    )
     def post(self, request):
         serializer = ContactMessageSerializer(data=request.data)
         if serializer.is_valid():

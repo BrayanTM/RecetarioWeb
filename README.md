@@ -12,6 +12,17 @@ Aplicación web de recetas desarrollada con Django REST Framework y PostgreSQL. 
 - **Docker Desktop** (para PostgreSQL 16)
 - virtualenv o venv (para entorno virtual)
 
+## 📚 Documentación de la API
+
+Este proyecto incluye documentación interactiva completa de la API utilizando **Swagger/OpenAPI**.
+
+Una vez que el servidor esté corriendo, accede a:
+- **Swagger UI** (interfaz interactiva): `http://localhost:8000/docs/`
+- **ReDoc** (documentación alternativa): `http://localhost:8000/redoc/`
+- **Schema JSON**: `http://localhost:8000/docs.json/`
+
+Ver documentación detallada de endpoints en: [backend/docs/ENDPOINTS_DOCUMENTATION.md](backend/docs/ENDPOINTS_DOCUMENTATION.md)
+
 ## 🚀 Instalación y Configuración
 
 ### 1. Clonar el repositorio
@@ -64,6 +75,8 @@ Copia el resultado y pégalo en tu archivo `.env` en la variable `SECRET_KEY`.
 Asegúrate de configurar también en tu `.env`:
 - `BASE_URL_FRONTEND`: URL de tu aplicación frontend (ej: `http://localhost:3000/`)
 - `JWT_ALGORITHM`: Algoritmo para JWT, usa `HS256`
+- `CORS_ORIGIN_WHITELIST`: Lista de orígenes permitidos para CORS (separados por comas)
+- `CORS_ORIGIN_REGEX_WHITELIST`: Patrones regex para orígenes CORS dinámicos
 
 ### 5. Iniciar PostgreSQL con Docker
 
@@ -217,6 +230,20 @@ RecetarioWeb/
 
 ### Características Implementadas
 
+#### 📖 Documentación Automática con Swagger/OpenAPI
+- ✅ **drf-yasg** integrado para documentación automática
+- ✅ **Swagger UI** disponible en `/docs/`
+- ✅ **ReDoc** disponible en `/redoc/`
+- ✅ Todos los endpoints documentados con descripciones, parámetros y respuestas
+- ✅ Soporte para multipart/form-data (subida de archivos)
+- ✅ Documentación de autenticación JWT
+
+#### 🌐 CORS (Cross-Origin Resource Sharing)
+- ✅ **django-cors-headers** configurado
+- ✅ Whitelist configurable de orígenes permitidos
+- ✅ Soporte para patrones regex en orígenes
+- ✅ Credentials habilitados para peticiones con cookies/auth
+
 #### 🎯 API REST con Django REST Framework
 
 **Categorías** (`/api/v1/categories/`)
@@ -287,6 +314,10 @@ RecetarioWeb/
 #### JWT (Autenticación)
 - `JWT_ALGORITHM`: Algoritmo para firmar tokens JWT (ej: HS256)
 
+#### CORS (Cross-Origin Resource Sharing)
+- `CORS_ORIGIN_WHITELIST`: Lista de orígenes permitidos para peticiones CORS (separados por comas)
+- `CORS_ORIGIN_REGEX_WHITELIST`: Patrones regex para orígenes CORS dinámicos (separados por comas)
+
 #### Base de Datos
 - `DATABASE_URL`: URL de conexión a PostgreSQL
 - `POSTGRES_DB`: Nombre de la base de datos
@@ -311,11 +342,13 @@ RecetarioWeb/
 
 - **Django 5.2.7** - Framework web
 - **Django REST Framework 3.16.1** - API REST
+- **drf-yasg 1.21.11** - Generación automática de documentación Swagger/OpenAPI
+- **django-cors-headers 4.9.0** - Gestión de CORS (Cross-Origin Resource Sharing)
 - **PostgreSQL 16** - Base de datos
-- **psycopg2-binary 2.9.10** - Adaptador PostgreSQL
+- **psycopg2-binary 2.9.11** - Adaptador PostgreSQL
 - **django-autoslug 1.9.9** - Generación automática de slugs
 - **python-dotenv 1.1.1** - Gestión de variables de entorno
-- **dj-database-url 2.3.0** - Configuración de base de datos
+- **dj-database-url 3.0.1** - Configuración de base de datos mediante URL
 - **python-jose 3.5.0** - Manejo de tokens JWT (JSON Web Tokens)
 - **ecdsa 0.19.1** - Algoritmos de firma digital para JWT
 - **rsa 4.9.1** - Criptografía RSA para JWT
@@ -330,6 +363,22 @@ El proyecto incluye CI/CD con GitHub Actions que:
 - ✅ Se ejecuta en cada push a `main` y en pull requests
 
 ## 🔗 Endpoints de la API
+
+### 📚 Documentación Completa
+
+**¡IMPORTANTE!** Para ver la documentación completa e interactiva de todos los endpoints:
+
+1. **Inicia el servidor**: `python manage.py runserver`
+2. **Accede a Swagger UI**: `http://localhost:8000/docs/`
+3. **O consulta**: [backend/docs/ENDPOINTS_DOCUMENTATION.md](backend/docs/ENDPOINTS_DOCUMENTATION.md)
+
+La documentación Swagger incluye:
+- ✅ Descripción detallada de cada endpoint
+- ✅ Parámetros requeridos y opcionales
+- ✅ Tipos de datos esperados
+- ✅ Ejemplos de peticiones y respuestas
+- ✅ Códigos de estado HTTP
+- ✅ **Interfaz interactiva** para probar los endpoints directamente
 
 ### Base URL
 ```
@@ -581,6 +630,33 @@ pip install -r requirements.txt --upgrade
 ## 📝 Licencia
 
 Ver archivo [LICENSE](LICENSE)
+
+## 🆕 Historial de Cambios Recientes
+
+### Octubre 2025 - v2.0
+- ✅ **Documentación Swagger/OpenAPI completa** con drf-yasg
+  - Interfaz interactiva en `/docs/` y `/redoc/`
+  - Todos los endpoints documentados con ejemplos
+  - Soporte para multipart/form-data correctamente configurado
+- ✅ **CORS configurado** con django-cors-headers
+  - Whitelist configurable de orígenes
+  - Soporte para patrones regex
+- ✅ **Mejoras en seguridad**
+  - Autenticación JWT mejorada
+  - Decoradores para protección de endpoints
+  - Validación de tokens optimizada
+- ✅ **Nuevas dependencias**
+  - drf-yasg 1.21.11 (documentación API)
+  - django-cors-headers 4.9.0 (CORS)
+  - inflection 0.5.1 (transformación de nombres)
+  - packaging 25.0 (gestión de versiones)
+  - pytz 2025.2 (zonas horarias)
+  - PyYAML 6.0.3 (parsing YAML)
+  - uritemplate 4.2.0 (templates de URI)
+- ✅ **Documentación actualizada**
+  - README mejorado con nuevas secciones
+  - Documentación detallada de endpoints
+  - Guías de solución de problemas
 
 ## 👨‍💻 Autor
 

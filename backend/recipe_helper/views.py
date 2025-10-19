@@ -5,11 +5,39 @@ from django.contrib.auth.models import User
 from rest_framework.views import APIView
 from django.http import JsonResponse
 from http import HTTPStatus
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 
 # Create your views here.
 class RecipeUserPanel(APIView):
     
-    
+    @swagger_auto_schema(
+        operation_description="Get all recipes from a specific user. Requires authentication.",
+        manual_parameters=[
+            openapi.Parameter(
+                'Authorization',
+                openapi.IN_HEADER,
+                description="JWT token (Bearer <token>)",
+                type=openapi.TYPE_STRING,
+                required=True
+            ),
+        ],
+        responses={
+            200: openapi.Response(
+                description="List of user recipes",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'recipes': openapi.Schema(
+                            type=openapi.TYPE_ARRAY,
+                            items=openapi.Schema(type=openapi.TYPE_OBJECT)
+                        )
+                    }
+                )
+            ),
+            404: 'User not found'
+        }
+    )
     @logging_decorator()
     def get(self, request, pk):
         # Validar que el usuario exista
@@ -26,7 +54,21 @@ class RecipeUserPanel(APIView):
 
 class RecipeDetailView(APIView):
     
-    
+    @swagger_auto_schema(
+        operation_description="Get a specific recipe by slug",
+        responses={
+            200: openapi.Response(
+                description="Recipe details",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'recipe': openapi.Schema(type=openapi.TYPE_OBJECT)
+                    }
+                )
+            ),
+            404: 'Recipe not found'
+        }
+    )
     def get(self, request, slug):
         # Validar que la receta exista
         try:
@@ -40,6 +82,23 @@ class RecipeDetailView(APIView):
 
 class RecipeListView(APIView):
     
+    @swagger_auto_schema(
+        operation_description="Get 3 random recipes",
+        responses={
+            200: openapi.Response(
+                description="List of random recipes",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'recipes': openapi.Schema(
+                            type=openapi.TYPE_ARRAY,
+                            items=openapi.Schema(type=openapi.TYPE_OBJECT)
+                        )
+                    }
+                )
+            )
+        }
+    )
     def get(self, request):
         recipes = Recipe.objects.order_by('?').all()[:3]
         serializer = RecipeSerializer(recipes, many=True)
@@ -48,7 +107,29 @@ class RecipeListView(APIView):
 
 class RecipeListSearch(APIView):
     
-    
+    @swagger_auto_schema(
+        operation_description="Search recipes by category and name",
+        manual_parameters=[
+            openapi.Parameter('category_id', openapi.IN_QUERY, description="Category ID (required)", type=openapi.TYPE_INTEGER, required=True),
+            openapi.Parameter('search', openapi.IN_QUERY, description="Search term for recipe name (optional)", type=openapi.TYPE_STRING),
+        ],
+        responses={
+            200: openapi.Response(
+                description="List of filtered recipes",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'recipes': openapi.Schema(
+                            type=openapi.TYPE_ARRAY,
+                            items=openapi.Schema(type=openapi.TYPE_OBJECT)
+                        )
+                    }
+                )
+            ),
+            400: 'Bad Request - category_id is required or invalid',
+            404: 'Category not found'
+        }
+    )
     def get(self, request):
         if not request.GET.get('category_id') or request.GET.get('category_id') == None:
             return JsonResponse({'error': 'category_id and search parameters are required.'}, status=HTTPStatus.BAD_REQUEST)
