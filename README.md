@@ -6,11 +6,16 @@ Aplicación web de recetas desarrollada con Django REST Framework y PostgreSQL. 
 
 ## 📋 Requisitos
 
+### Backend
 - Python 3.12+
 - Git
 - pip (gestor de paquetes de Python)
-- **Docker Desktop** (para PostgreSQL 16)
+- **Docker Desktop** (para PostgreSQL 18)
 - virtualenv o venv (para entorno virtual)
+
+### Frontend
+- Node.js 20.19.0+ o 22.12.0+
+- npm (incluido con Node.js)
 
 ## 📚 Documentación de la API
 
@@ -25,14 +30,16 @@ Ver documentación detallada de endpoints en: [backend/docs/ENDPOINTS_DOCUMENTAT
 
 ## 🚀 Instalación y Configuración
 
-### 1. Clonar el repositorio
+### Backend
+
+#### 1. Clonar el repositorio
 
 ```bash
 git clone https://github.com/BrayanTM/RecetarioWeb.git
 cd RecetarioWeb
 ```
 
-### 2. Crear entorno virtual
+#### 2. Crear entorno virtual
 
 ```bash
 # Windows
@@ -44,14 +51,14 @@ python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-### 3. Instalar dependencias
+#### 3. Instalar dependencias
 
 ```bash
 cd backend
 pip install -r requirements.txt
 ```
 
-### 4. Configurar variables de entorno
+#### 4. Configurar variables de entorno
 
 ```bash
 # Copiar el archivo de ejemplo
@@ -78,7 +85,7 @@ Asegúrate de configurar también en tu `.env`:
 - `CORS_ORIGIN_WHITELIST`: Lista de orígenes permitidos para CORS (separados por comas)
 - `CORS_ORIGIN_REGEX_WHITELIST`: Patrones regex para orígenes CORS dinámicos
 
-### 5. Iniciar PostgreSQL con Docker
+#### 5. Iniciar PostgreSQL con Docker
 
 ```bash
 # Asegúrate de que Docker Desktop esté corriendo
@@ -90,7 +97,7 @@ docker-compose up -d
 docker-compose ps
 ```
 
-### 6. Ejecutar migraciones
+#### 6. Ejecutar migraciones
 
 ```bash
 python manage.py migrate
@@ -103,13 +110,13 @@ python manage.py makemigrations security
 python manage.py migrate
 ```
 
-### 7. Crear superusuario (opcional)
+#### 7. Crear superusuario (opcional)
 
 ```bash
 python manage.py createsuperuser
 ```
 
-### 8. Ejecutar servidor de desarrollo
+#### 8. Ejecutar servidor de desarrollo
 
 ```bash
 python manage.py runserver
@@ -118,6 +125,43 @@ python manage.py runserver
 La aplicación estará disponible en: `http://localhost:8000`
 
 El panel de administración en: `http://localhost:8000/admin`
+
+### Frontend
+
+#### 1. Instalar dependencias
+
+```bash
+cd frontend
+npm install
+```
+
+#### 2. Configurar variables de entorno (opcional)
+
+El frontend utiliza variables de entorno de Vite. Si necesitas configurar la URL de la API:
+
+```bash
+# Crear archivo .env en la carpeta frontend (opcional)
+# Por defecto, la aplicación funcionará sin este archivo
+
+# Ejemplo de configuración:
+VITE_API_URL=http://localhost:8000/api/v1
+```
+
+#### 3. Ejecutar servidor de desarrollo
+
+```bash
+npm run dev
+```
+
+La aplicación frontend estará disponible en: `http://localhost:5173`
+
+#### 4. Compilar para producción
+
+```bash
+npm run build
+```
+
+Los archivos compilados estarán en: `frontend/dist/`
 
 ## � Configuración de Email (Mailtrap)
 
@@ -219,6 +263,21 @@ RecetarioWeb/
 │   ├── assets/                  # Archivos estáticos
 │   ├── manage.py
 │   └── requirements.txt         # Dependencias Python
+├── frontend/                    # Aplicación Vue.js
+│   ├── public/                  # Archivos públicos estáticos
+│   ├── src/
+│   │   ├── views/               # Vistas/Páginas Vue
+│   │   │   └── HomePage.vue     # Página de inicio
+│   │   ├── router/              # Configuración de rutas
+│   │   │   └── index.js         # Rutas de Vue Router
+│   │   ├── stores/              # Stores de Pinia (gestión de estado)
+│   │   ├── App.vue              # Componente raíz de Vue
+│   │   └── main.js              # Punto de entrada de la aplicación
+│   ├── index.html               # HTML principal
+│   ├── vite.config.js           # Configuración de Vite
+│   ├── package.json             # Dependencias de Node.js
+│   ├── eslint.config.js         # Configuración de ESLint
+│   └── README.md                # Documentación del frontend
 ├── docker-compose.yml           # Configuración PostgreSQL
 ├── .env.example                 # Plantilla de variables de entorno
 ├── .gitignore
@@ -333,10 +392,20 @@ RecetarioWeb/
 
 ### Base de Datos
 
-- 🐘 **PostgreSQL 16** con Docker
+- 🐘 **PostgreSQL 18** con Docker
 - 📦 Puerto: `5433` (local) → `5432` (contenedor)
 - 🔄 Gestión con docker-compose
 - 💾 Volumen persistente: `pgdata`
+
+### Frontend
+
+- ⚡ **Vite 7.1.7** - Build tool y dev server ultrarrápido
+- 🎨 **Vue 3.5.22** - Framework progresivo de JavaScript
+- 🗂️ **Vue Router 4.5.1** - Enrutamiento oficial para Vue.js
+- 📦 **Pinia 3.0.3** - Store oficial para Vue.js (gestión de estado)
+- 🧹 **ESLint 9.33.0** - Linter para JavaScript/Vue
+- 🛠️ **Vue DevTools** - Plugin de desarrollo integrado
+- 🎯 **Node.js 20.19+** o **22.12+** requerido
 
 ### Tecnologías y Dependencias
 
@@ -568,7 +637,9 @@ Body:
 
 ## 🐛 Solución de Problemas
 
-### Error de conexión a PostgreSQL
+### Backend
+
+#### Error de conexión a PostgreSQL
 
 ```bash
 # Verificar que Docker esté corriendo
@@ -582,7 +653,7 @@ docker-compose up -d
 docker-compose logs db
 ```
 
-### Error con SECRET_KEY
+#### Error con SECRET_KEY
 
 ```bash
 # Generar nueva SECRET_KEY
@@ -591,7 +662,7 @@ python -c "from django.core.management.utils import get_random_secret_key; print
 # Actualizar .env con el valor generado
 ```
 
-### Reinstalar dependencias
+#### Reinstalar dependencias
 
 ```bash
 # Activar entorno virtual
@@ -602,7 +673,7 @@ source .venv/bin/activate  # Linux/Mac
 pip install -r requirements.txt --upgrade
 ```
 
-### Error de autenticación JWT
+#### Error de autenticación JWT
 
 ```bash
 # Error: "Authorization header missing"
@@ -616,7 +687,7 @@ pip install -r requirements.txt --upgrade
 # Verifica que JWT_ALGORITHM esté configurado correctamente en .env (usa HS256)
 ```
 
-### Usuario no puede iniciar sesión
+#### Usuario no puede iniciar sesión
 
 ```bash
 # Error: "Account is not active. Please verify your email."
@@ -627,11 +698,82 @@ pip install -r requirements.txt --upgrade
 # Verifica que el email y contraseña sean correctos.
 ```
 
+### Frontend
+
+#### Error al instalar dependencias
+
+```bash
+# Limpiar caché de npm
+npm cache clean --force
+
+# Eliminar node_modules y reinstalar
+rm -rf node_modules package-lock.json
+npm install
+```
+
+#### Puerto 5173 ya está en uso
+
+```bash
+# Vite usa el puerto 5173 por defecto
+# Si está ocupado, Vite automáticamente usará el siguiente disponible (5174, etc.)
+
+# O puedes especificar un puerto diferente:
+npm run dev -- --port 3000
+```
+
+#### Errores de ESLint
+
+```bash
+# Ejecutar el linter y corregir automáticamente
+npm run lint
+
+# Si persisten errores, revisa eslint.config.js
+```
+
+#### El frontend no se conecta al backend
+
+```bash
+# Verifica que el backend esté corriendo en http://localhost:8000
+# Verifica la configuración de CORS en el backend (.env):
+# CORS_ORIGIN_WHITELIST debe incluir http://localhost:5173
+
+# Si usas un puerto diferente, actualiza la configuración
+```
+
+#### Error de hot-reload no funciona
+
+```bash
+# Reinicia el servidor de desarrollo
+# Ctrl+C para detener
+npm run dev
+
+# En algunos sistemas, puede ser necesario configurar el watcher
+# Agrega en vite.config.js:
+# server: { watch: { usePolling: true } }
+```
+
 ## 📝 Licencia
 
 Ver archivo [LICENSE](LICENSE)
 
 ## 🆕 Historial de Cambios Recientes
+
+### Octubre 2025 - v3.0
+- ✅ **Frontend Vue.js 3 implementado**
+  - Aplicación SPA con Vue 3.5.22
+  - Vite 7.1.7 como build tool y dev server
+  - Vue Router 4.5.1 para navegación
+  - Pinia 3.0.3 para gestión de estado
+  - ESLint configurado para código limpio
+  - Vue DevTools integrado
+  - Componente HomePage creado
+- ✅ **PostgreSQL actualizado a versión 18**
+  - Docker Compose actualizado con imagen postgres:18
+  - Compatibilidad mejorada y mejor rendimiento
+- ✅ **Estructura de proyecto full-stack**
+  - Separación clara entre backend y frontend
+  - Configuración independiente de cada capa
+  - README actualizado con instrucciones para ambas partes
 
 ### Octubre 2025 - v2.0
 - ✅ **Documentación Swagger/OpenAPI completa** con drf-yasg
