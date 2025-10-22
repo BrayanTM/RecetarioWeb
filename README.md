@@ -135,17 +135,30 @@ cd frontend
 npm install
 ```
 
-#### 2. Configurar variables de entorno (opcional)
+#### 2. Configurar variables de entorno (recomendado)
 
-El frontend utiliza variables de entorno de Vite. Si necesitas configurar la URL de la API:
+El frontend utiliza variables de entorno de Vite para conectarse al backend:
 
 ```bash
-# Crear archivo .env en la carpeta frontend (opcional)
-# Por defecto, la aplicación funcionará sin este archivo
+# Copiar el archivo de ejemplo
+cp .env.example .env
 
-# Ejemplo de configuración:
-VITE_API_URL=http://localhost:8000/api/v1
+# Editar .env si necesitas cambiar configuraciones
+# En Windows: notepad .env
+# En Linux/Mac: nano .env
 ```
+
+**Configuración por defecto en `.env`:**
+```bash
+VITE_API_URL=http://localhost:8000/api/v1
+VITE_APP_TITLE=RecetarioWeb - Cookbook
+```
+
+**Importante:**
+- ✅ Todas las variables de Vite deben comenzar con `VITE_`
+- ✅ Las variables se incrustan en tiempo de compilación
+- ✅ Debes reiniciar el servidor de desarrollo después de cambiar variables
+- ✅ La aplicación funcionará con valores predeterminados si no existe el archivo `.env`
 
 #### 3. Ejecutar servidor de desarrollo
 
@@ -155,6 +168,11 @@ npm run dev
 
 La aplicación frontend estará disponible en: `http://localhost:5173`
 
+**Páginas disponibles:**
+- 🏠 Home: `http://localhost:5173/`
+- 👥 About Us: `http://localhost:5173/about-us`
+- 📖 Recipe Detail: `http://localhost:5173/recipe/:slug` (ej: `/recipe/pastel-de-chocolate`)
+
 #### 4. Compilar para producción
 
 ```bash
@@ -162,6 +180,14 @@ npm run build
 ```
 
 Los archivos compilados estarán en: `frontend/dist/`
+
+#### 5. Vista previa de la compilación de producción
+
+```bash
+npm run preview
+```
+
+Esto iniciará un servidor local para previsualizar la versión de producción.
 
 ## � Configuración de Email (Mailtrap)
 
@@ -211,12 +237,44 @@ SMTP_PASSWORD=tu_contraseña_de_aplicacion
 ## 🧪 Pruebas
 
 ```bash
-# Ejecutar tests
+# Ejecutar tests del backend
+cd backend
 python manage.py test
 
 # Verificar configuración de despliegue
 python manage.py check --deploy
+
+# Frontend: Ejecutar linter
+cd frontend
+npm run lint
 ```
+
+## 📸 Contenido de Ejemplo
+
+El proyecto incluye **20 recetas de ejemplo** con imágenes en `backend/uploads/recipes/`:
+
+- 🥑 Avocado Toast
+- 🍫 Brownies
+- 🍞 Bruschetta
+- 🌯 Burrito Bowl
+- 🥗 Caesar Salad
+- 🧁 Cupcakes
+- 🧀 Grilled Cheese
+- 🍗 Grilled Chicken
+- ☕ Iced Coffee
+- 🍋 Lemon Smoothie
+- 🧀 Mac and Cheese
+- 🥞 Pancakes
+- 🥗 Quinoa Salad
+- 🐟 Salmon
+- 🍳 Scrambled Eggs
+- 🍝 Spaghetti Bolognese
+- 🍄 Stuffed Mushrooms
+- 🍣 Sushi
+- 🌮 Tacos al Pastor
+- 🥡 Tofu Stir-Fry
+
+Estas imágenes se utilizan para **desarrollo y pruebas**. En producción, los usuarios subirán sus propias imágenes de recetas.
 
 ## 📦 Estructura del Proyecto
 
@@ -258,16 +316,32 @@ RecetarioWeb/
 │   ├── home/                    # App principal
 │   ├── example/                 # App de ejemplo
 │   ├── uploads/                 # Archivos subidos
-│   │   ├── recipes/             # Imágenes de recetas
+│   │   ├── recipes/             # Imágenes de recetas (20+ imágenes)
 │   │   └── example/
 │   ├── assets/                  # Archivos estáticos
+│   ├── docs/                    # Documentación adicional
+│   │   └── ENDPOINTS_DOCUMENTATION.md
 │   ├── manage.py
 │   └── requirements.txt         # Dependencias Python
-├── frontend/                    # Aplicación Vue.js
+├── frontend/                    # Aplicación Vue.js 3
 │   ├── public/                  # Archivos públicos estáticos
+│   │   ├── css/                 # Hojas de estilo (Bootstrap, Animate, etc.)
+│   │   ├── img/                 # Imágenes del sitio
+│   │   ├── js/                  # JavaScript (jQuery, plugins, etc.)
+│   │   ├── fonts/               # Fuentes personalizadas
+│   │   ├── scss/                # Archivos SCSS (preprocesador CSS)
+│   │   └── style.css            # Estilos principales
 │   ├── src/
-│   │   ├── views/               # Vistas/Páginas Vue
-│   │   │   └── HomePage.vue     # Página de inicio
+│   │   ├── components/          # Componentes reutilizables
+│   │   │   ├── HeaderBase.vue   # Barra de navegación
+│   │   │   └── FooterBase.vue   # Pie de página
+│   │   ├── views/               # Vistas/Páginas principales
+│   │   │   ├── HomePage.vue     # Página de inicio
+│   │   │   ├── AboutUs.vue      # Página "Nosotros"
+│   │   │   ├── RecipeDetail.vue # Detalle de receta
+│   │   │   └── ErrorPage404.vue # Página de error 404
+│   │   ├── services/            # Servicios de API
+│   │   │   └── homeServices.js  # Servicios para home
 │   │   ├── router/              # Configuración de rutas
 │   │   │   └── index.js         # Rutas de Vue Router
 │   │   ├── stores/              # Stores de Pinia (gestión de estado)
@@ -277,9 +351,11 @@ RecetarioWeb/
 │   ├── vite.config.js           # Configuración de Vite
 │   ├── package.json             # Dependencias de Node.js
 │   ├── eslint.config.js         # Configuración de ESLint
+│   ├── jsconfig.json            # Configuración de JavaScript
+│   ├── .env.example             # Plantilla de variables de entorno
 │   └── README.md                # Documentación del frontend
 ├── docker-compose.yml           # Configuración PostgreSQL
-├── .env.example                 # Plantilla de variables de entorno
+├── .env.example                 # Plantilla de variables de entorno (backend)
 ├── .gitignore
 ├── LICENSE
 └── README.md
@@ -288,6 +364,28 @@ RecetarioWeb/
 ## 🛠️ Desarrollo
 
 ### Características Implementadas
+
+#### 🎨 Aplicación Frontend Vue.js 3
+- ✅ **Componentes reutilizables**:
+  - `HeaderBase.vue`: Barra de navegación con menú y enlaces
+  - `FooterBase.vue`: Pie de página con información del desarrollador
+- ✅ **Vistas principales**:
+  - `HomePage.vue`: Página principal con recetas destacadas
+  - `AboutUs.vue`: Información sobre el proyecto
+  - `RecipeDetail.vue`: Detalle de cada receta (en desarrollo)
+  - `ErrorPage404.vue`: Página de error personalizada
+- ✅ **Servicios API**:
+  - `homeServices.js`: Conexión con endpoints del backend
+  - Integración con `VITE_API_URL` para consumo de API REST
+- ✅ **Sistema de navegación**:
+  - Vue Router configurado con rutas dinámicas
+  - Navegación por slug para recetas
+  - Redirección automática a página 404
+- ✅ **Assets y recursos**:
+  - CSS personalizado y responsive
+  - Bootstrap 5 integrado
+  - Imágenes y fuentes optimizadas
+  - JavaScript para interactividad (menú, carruseles, etc.)
 
 #### 📖 Documentación Automática con Swagger/OpenAPI
 - ✅ **drf-yasg** integrado para documentación automática
@@ -635,7 +733,61 @@ Body:
 
 **Nota:** El token JWT expira después de 24 horas. El usuario deberá iniciar sesión nuevamente.
 
-## 🐛 Solución de Problemas
+## � Mejores Prácticas de Desarrollo
+
+### Variables de Entorno
+
+#### Backend (.env)
+- ✅ **Nunca** commitees el archivo `.env` a git
+- ✅ Genera una `SECRET_KEY` única para cada entorno
+- ✅ Usa `DEBUG=False` en producción
+- ✅ Configura correctamente `ALLOWED_HOSTS` para producción
+- ✅ Actualiza `CORS_ORIGIN_WHITELIST` según tus dominios
+- ✅ Usa contraseñas fuertes para la base de datos
+- ✅ Configura SMTP con credenciales reales en producción
+
+#### Frontend (.env)
+- ✅ Incluye el slash final en `VITE_API_URL` (ej: `/api/v1/`)
+- ✅ Todas las variables deben comenzar con `VITE_`
+- ✅ Reinicia el servidor de desarrollo después de cambiar el `.env`
+- ✅ Las variables se incrustan en tiempo de compilación, no en runtime
+
+### Desarrollo Local
+
+#### Orden de inicio recomendado:
+1. **Docker** (PostgreSQL): `docker-compose up -d`
+2. **Backend** (Django): `cd backend && python manage.py runserver`
+3. **Frontend** (Vue): `cd frontend && npm run dev`
+
+#### Antes de hacer commits:
+```bash
+# Backend: Ejecutar tests
+cd backend
+python manage.py test
+
+# Frontend: Ejecutar linter
+cd frontend
+npm run lint
+
+# Verificar estado de git
+git status
+```
+
+### Integración Frontend-Backend
+
+#### Comunicación entre capas:
+- 🔗 Frontend consume la API REST del backend
+- 🌐 CORS debe estar configurado correctamente
+- 🔑 JWT se usa para autenticación en endpoints protegidos
+- 📤 Las imágenes se suben al backend y se sirven desde `/uploads/`
+
+#### URLs importantes:
+- Backend API: `http://localhost:8000/api/v1/`
+- Documentación Swagger: `http://localhost:8000/docs/`
+- Frontend App: `http://localhost:5173/`
+- Admin Django: `http://localhost:8000/admin/`
+
+## �🐛 Solución de Problemas
 
 ### Backend
 
@@ -733,11 +885,16 @@ npm run lint
 #### El frontend no se conecta al backend
 
 ```bash
-# Verifica que el backend esté corriendo en http://localhost:8000
-# Verifica la configuración de CORS en el backend (.env):
+# 1. Verifica que el backend esté corriendo en http://localhost:8000
+python manage.py runserver  # En el directorio backend
+
+# 2. Verifica la variable de entorno en frontend/.env
+# Debe contener: VITE_API_URL=http://localhost:8000/api/v1
+
+# 3. Verifica la configuración de CORS en el backend (.env):
 # CORS_ORIGIN_WHITELIST debe incluir http://localhost:5173
 
-# Si usas un puerto diferente, actualiza la configuración
+# 4. Si usas un puerto diferente, actualiza ambas configuraciones
 ```
 
 #### Error de hot-reload no funciona
@@ -752,11 +909,63 @@ npm run dev
 # server: { watch: { usePolling: true } }
 ```
 
+#### Las imágenes no se muestran correctamente
+
+```bash
+# Las imágenes deben estar en la carpeta public/ del frontend
+# O en backend/uploads/ para las subidas desde la API
+
+# Verifica que la URL de la imagen sea correcta:
+# Frontend: /img/ruta/imagen.jpg (desde public/)
+# Backend: http://localhost:8000/uploads/recipes/imagen.jpg
+```
+
+#### Error "VITE_API_URL is not defined"
+
+```bash
+# Asegúrate de que existe el archivo .env en la carpeta frontend
+cd frontend
+cp .env.example .env
+
+# Verifica que la variable comience con VITE_
+# Incorrecto: API_URL=...
+# Correcto: VITE_API_URL=...
+
+# Reinicia el servidor de desarrollo después de crear/modificar el .env
+```
+
 ## 📝 Licencia
 
 Ver archivo [LICENSE](LICENSE)
 
 ## 🆕 Historial de Cambios Recientes
+
+### Octubre 2025 - v3.1
+- ✅ **Frontend Vue.js 3 completamente funcional**
+  - ✨ Componentes reutilizables: `HeaderBase` y `FooterBase`
+  - 📄 Múltiples vistas: HomePage, AboutUs, RecipeDetail, ErrorPage404
+  - 🔀 Sistema de rutas completo con Vue Router
+  - 🎨 Integración de assets públicos (CSS, imágenes, JS, fonts)
+  - 🔌 Servicio de API: `homeServices.js` conectado al backend
+  - 📱 Diseño responsive con Bootstrap y CSS personalizado
+  - 🌐 Navegación fluida entre páginas
+  - 🔗 Enlaces dinámicos a recetas por slug
+  - 🎭 Animaciones CSS con Animate.css
+  - 🎯 Font Awesome para iconografía
+- ✅ **Contenido dinámico de recetas**
+  - 🖼️ 20 imágenes de ejemplo de recetas en `backend/uploads/recipes/`
+  - 📊 Datos de prueba para desarrollo (tacos, sushi, pancakes, etc.)
+  - 🎲 Recetas aleatorias en página de inicio
+  - 🔍 Sistema de búsqueda por categoría implementado
+- ✅ **Integración Frontend-Backend**
+  - ⚡ Consumo de API REST desde Vue
+  - 🔄 Variables de entorno con Vite (VITE_API_URL)
+  - 🌍 CORS configurado correctamente
+  - 📡 Servicio `homeServices.js` para comunicación con la API
+- ✅ **Archivos de configuración actualizados**
+  - 📝 `.env.example` sincronizado en backend y frontend
+  - 📚 README mejorado con documentación completa
+  - 🔧 Variables de entorno documentadas
 
 ### Octubre 2025 - v3.0
 - ✅ **Frontend Vue.js 3 implementado**
@@ -766,7 +975,6 @@ Ver archivo [LICENSE](LICENSE)
   - Pinia 3.0.3 para gestión de estado
   - ESLint configurado para código limpio
   - Vue DevTools integrado
-  - Componente HomePage creado
 - ✅ **PostgreSQL actualizado a versión 18**
   - Docker Compose actualizado con imagen postgres:18
   - Compatibilidad mejorada y mejor rendimiento
@@ -800,10 +1008,44 @@ Ver archivo [LICENSE](LICENSE)
   - Documentación detallada de endpoints
   - Guías de solución de problemas
 
-## 👨‍💻 Autor
+## � Estado del Proyecto
 
-BrayanTM
+### Funcionalidades Completadas
+- ✅ Backend Django REST Framework completamente funcional
+- ✅ Frontend Vue.js 3 con múltiples vistas y componentes
+- ✅ Sistema de autenticación JWT con verificación de email
+- ✅ CRUD completo de recetas y categorías
+- ✅ Sistema de contacto con notificaciones por email
+- ✅ Documentación Swagger/OpenAPI interactiva
+- ✅ PostgreSQL 18 con Docker Compose
+- ✅ CORS configurado para desarrollo y producción
+- ✅ 20 recetas de ejemplo con imágenes
+
+### En Desarrollo
+- 🚧 Vista de detalle de receta (RecipeDetail.vue)
+- 🚧 Sistema de búsqueda avanzada de recetas
+- 🚧 Panel de usuario para gestionar recetas propias
+- 🚧 Sistema de registro y login en el frontend
+- 🚧 Página de contacto en el frontend
+
+### Próximas Características
+- 📅 Sistema de favoritos
+- 📅 Comentarios y valoraciones en recetas
+- 📅 Compartir recetas en redes sociales
+- 📅 Filtros avanzados de búsqueda
+- 📅 Perfil de usuario completo
+
+## 🤝 Contribuciones
+
+Las contribuciones son bienvenidas. Por favor:
+1. Fork el proyecto
+2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
+3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
+4. Push a la rama (`git push origin feature/AmazingFeature`)
+5. Abre un Pull Request
 
 ---
 
 **Nota:** Recuerda actualizar tu archivo `.env` con valores reales antes de ejecutar la aplicación.
+
+**Última actualización:** Octubre 2025 - v3.1
