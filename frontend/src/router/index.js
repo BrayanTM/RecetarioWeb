@@ -5,8 +5,23 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      component: () => import('@/views/Home.vue'),
+      component: () => import('@/views/HomePage.vue'),
       name: 'home',
+    },
+    {
+      path: '/about-us',
+      component: () => import('@/views/AboutUs.vue'),
+      name: 'aboutUs',
+    },
+    {
+      path: '/recipe/:slug',
+      component: () => import('@/views/RecipeDetail.vue'),
+      name: 'recipeDetail',
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      component: () => import('@/views/ErrorPage404.vue'),
+      name: 'error404',
     }
   ],
 })
