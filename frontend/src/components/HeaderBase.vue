@@ -12,7 +12,7 @@
                         <div class="breaking-news">
                             <div id="breakingNewsTicker" class="ticker">
                                 <ul>
-                                    <li><a href="mailto:brayantebelan-work@outlook.com">brayantebelan-work@outlook.com</a></li>
+                                    <li><a href="mailto:yourmail@gmail.com">yourmail@gmail.com</a></li>
                                 </ul>
                             </div>
                         </div>
