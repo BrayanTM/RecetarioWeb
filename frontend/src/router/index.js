@@ -14,9 +14,19 @@ const router = createRouter({
       name: 'aboutUs',
     },
     {
+      path: '/recipes',
+      component: () => import('@/views/RecipeList.vue'),
+      name: 'recipeList',
+    },
+    {
       path: '/recipe/:slug',
       component: () => import('@/views/RecipeDetail.vue'),
       name: 'recipeDetail',
+    },
+    {
+      path: '/recipes/search',
+      component: () => import('@/views/RecipeSearch.vue'),
+      name: 'recipeSearch',
     },
     {
       path: '/:pathMatch(.*)*',

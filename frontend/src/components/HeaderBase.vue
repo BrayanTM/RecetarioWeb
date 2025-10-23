@@ -62,8 +62,8 @@
                                             About Us
                                         </router-link>
                                     </li>
-                                    <li><router-link to="/recetas" title="Recetas">Recipes</router-link></li>
-                                    <li><router-link to="/contacto" title="Contacto">Contact</router-link></li>
+                                    <li><router-link to="/recipes" title="Recipes">Recipes</router-link></li>
+                                    <li><router-link to="/contact" title="Contact">Contact</router-link></li>
 
                                     <!-- <li v-if="store.authId==null"><router-link to="/registro" title="Registro">Register</router-link></li>
                                     <li v-if="store.authId==null"><router-link :to="{name:'login'}" title="Login">Login</router-link></li>
