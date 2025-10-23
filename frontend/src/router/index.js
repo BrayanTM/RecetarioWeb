@@ -29,6 +29,11 @@ const router = createRouter({
       name: 'recipeSearch',
     },
     {
+      path: '/contact',
+      component: () => import('@/views/ContactPage.vue'),
+      name: 'contact',
+    },
+    {
       path: '/:pathMatch(.*)*',
       component: () => import('@/views/ErrorPage404.vue'),
       name: 'error404',

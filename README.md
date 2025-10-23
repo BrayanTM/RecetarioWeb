@@ -174,6 +174,7 @@ La aplicación frontend estará disponible en: `http://localhost:5173`
 - 📖 Recipes List: `http://localhost:5173/recipes`
 - 🔍 Recipe Search: `http://localhost:5173/recipes/search`
 - 📖 Recipe Detail: `http://localhost:5173/recipe/:slug` (ej: `/recipe/pastel-de-chocolate`)
+- 📧 Contact: `http://localhost:5173/contact`
 
 #### 4. Compilar para producción
 
@@ -343,10 +344,14 @@ RecetarioWeb/
 │   │   │   ├── RecipeList.vue   # Listado de recetas con búsqueda
 │   │   │   ├── RecipeSearch.vue # Búsqueda avanzada de recetas
 │   │   │   ├── RecipeDetail.vue # Detalle completo de receta
+│   │   │   ├── ContactPage.vue  # Formulario de contacto
 │   │   │   └── ErrorPage404.vue # Página de error 404
 │   │   ├── composables/         # Composables de Vue 3
 │   │   │   ├── recipeComposable.js       # Lógica para lista y búsqueda de recetas
-│   │   │   └── recipeDetailComposable.js # Lógica para detalle de recetas
+│   │   │   ├── recipeDetailComposable.js # Lógica para detalle de recetas
+│   │   │   └── useContactComposable.js   # Lógica para envío de mensajes de contacto
+│   │   ├── schemas/             # Esquemas de validación con Yup
+│   │   │   └── validationScheme.js # Esquemas para validación de formularios
 │   │   ├── services/            # Servicios de API (deprecated, usar composables)
 │   │   │   └── homeServices.js  # Servicios para home
 │   │   ├── router/              # Configuración de rutas
@@ -382,16 +387,19 @@ RecetarioWeb/
   - `RecipeList.vue`: Listado completo de recetas con búsqueda y filtrado por categoría
   - `RecipeSearch.vue`: Vista dedicada de búsqueda avanzada de recetas
   - `RecipeDetail.vue`: Detalle completo de cada receta con toda la información
+  - `ContactPage.vue`: Formulario de contacto con validación y envío de emails
   - `ErrorPage404.vue`: Página de error personalizada
 - ✅ **Composables (Composition API)**:
   - `recipeComposable.js`: Manejo de lista de recetas y categorías
   - `recipeDetailComposable.js`: Obtención de detalle de recetas por slug
+  - `useContactComposable.js`: Envío de mensajes de contacto al backend
   - Integración con `VITE_API_URL` para consumo de API REST
   - Manejo de estados reactivos con Vue 3 Composition API
 - ✅ **Validación de formularios**:
   - Integración de VeeValidate para validación de formularios
   - Soporte para esquemas de validación con Yup
-  - Componentes Form y Field para formularios reactivos
+  - Componentes Form, Field y ErrorMessage para formularios reactivos
+  - Esquema `contactValidationSchema` para validación de contacto
 - ✅ **Sistema de navegación**:
   - Vue Router configurado con rutas dinámicas
   - Navegación por slug para recetas
@@ -518,6 +526,7 @@ RecetarioWeb/
 - 📦 **Pinia 3.0.3** - Store oficial para Vue.js (gestión de estado)
 - ✅ **VeeValidate 4.15.1** - Validación de formularios para Vue 3
 - 📋 **@vee-validate/yup 4.15.1** - Integración de Yup con VeeValidate para esquemas de validación
+- 🔍 **Yup 1.7.1** - Schema builder para validación de valores (incluido con @vee-validate/yup)
 - 🧹 **ESLint 9.33.0** - Linter para JavaScript/Vue
 - 🛠️ **Vue DevTools** - Plugin de desarrollo integrado
 - 🎯 **Node.js 20.19+** o **22.12+** requerido
@@ -957,6 +966,27 @@ Ver archivo [LICENSE](LICENSE)
 
 ## 🆕 Historial de Cambios Recientes
 
+### Octubre 2025 - v3.3
+- ✅ **Página de Contacto completa implementada**
+  - 📧 **ContactPage.vue**: Formulario de contacto completamente funcional
+  - ✅ **useContactComposable.js**: Composable para envío de mensajes de contacto
+  - 📋 **validationScheme.js**: Esquemas de validación con Yup para formularios
+  - 🎨 Integración completa con VeeValidate (Form, Field, ErrorMessage)
+  - 🔄 Estados de carga con preloader visual durante envío
+  - ✉️ Envío automático de emails mediante API del backend
+  - 🌐 Conectado a endpoint `/api/v1/contact/` con `VITE_API_URL`
+- ✅ **Mejoras en navegación y recursos**
+  - 🗺️ Ruta `/contact` agregada al router con lazy loading
+  - 🔗 Enlace de contacto actualizado en `HeaderBase.vue`
+  - 🎨 Imágenes actualizadas: favicon y logo optimizados
+  - 📬 Email de contacto genérico para ejemplo: `yourmail@gmail.com`
+- ✅ **Validación de formularios robusta**
+  - ✅ Validación de nombre (mínimo 2 caracteres)
+  - ✅ Validación de email (formato válido)
+  - ✅ Validación de teléfono (solo números y caracteres válidos)
+  - ✅ Validación de mensaje (mínimo 10 caracteres)
+  - 🔴 Mensajes de error contextuales con `ErrorMessage`
+
 ### Octubre 2025 - v3.2
 - ✅ **Mejoras en el Frontend Vue.js 3**
   - 📋 **VeeValidate 4.15.1** integrado para validación de formularios
@@ -1058,6 +1088,8 @@ Ver archivo [LICENSE](LICENSE)
 - ✅ Sistema de autenticación JWT con verificación de email
 - ✅ CRUD completo de recetas y categorías
 - ✅ Sistema de contacto con notificaciones por email
+- ✅ **Página de contacto completamente funcional en frontend**
+- ✅ **Formulario de contacto con validación robusta (VeeValidate + Yup)**
 - ✅ Documentación Swagger/OpenAPI interactiva
 - ✅ PostgreSQL 18 con Docker Compose
 - ✅ CORS configurado para desarrollo y producción
@@ -1065,22 +1097,25 @@ Ver archivo [LICENSE](LICENSE)
 - ✅ Vista de listado de recetas con filtros
 - ✅ Vista de búsqueda avanzada de recetas por categoría
 - ✅ Vista de detalle de receta completa
-- ✅ Composables para manejo de datos reactivos
+- ✅ Composables para manejo de datos reactivos (recipes, contact)
 - ✅ Integración de VeeValidate para validación de formularios
+- ✅ Esquemas de validación con Yup implementados
 
 ### En Desarrollo
 - 🚧 Panel de usuario para gestionar recetas propias
 - 🚧 Sistema de registro y login en el frontend
-- 🚧 Página de contacto en el frontend
-- 🚧 Validación avanzada de formularios con Yup
 - 🚧 Mejoras en la UI/UX de búsqueda de recetas
+- 🚧 Notificaciones toast/snackbar para feedback de usuario
 
 ### Próximas Características
+- 📅 Sistema de registro y login en el frontend
+- 📅 Panel de usuario para gestionar recetas propias
 - 📅 Sistema de favoritos
 - 📅 Comentarios y valoraciones en recetas
 - 📅 Compartir recetas en redes sociales
-- 📅 Filtros avanzados de búsqueda
+- 📅 Filtros avanzados de búsqueda (tiempo, dificultad, ingredientes)
 - 📅 Perfil de usuario completo
+- 📅 Notificaciones toast/snackbar para mejor feedback
 
 ## 🤝 Contribuciones
 
@@ -1095,4 +1130,4 @@ Las contribuciones son bienvenidas. Por favor:
 
 **Nota:** Recuerda actualizar tu archivo `.env` con valores reales antes de ejecutar la aplicación.
 
-**Última actualización:** Octubre 2025 - v3.2
+**Última actualización:** Octubre 2025 - v3.3
