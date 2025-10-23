@@ -171,6 +171,8 @@ La aplicación frontend estará disponible en: `http://localhost:5173`
 **Páginas disponibles:**
 - 🏠 Home: `http://localhost:5173/`
 - 👥 About Us: `http://localhost:5173/about-us`
+- 📖 Recipes List: `http://localhost:5173/recipes`
+- 🔍 Recipe Search: `http://localhost:5173/recipes/search`
 - 📖 Recipe Detail: `http://localhost:5173/recipe/:slug` (ej: `/recipe/pastel-de-chocolate`)
 
 #### 4. Compilar para producción
@@ -338,9 +340,14 @@ RecetarioWeb/
 │   │   ├── views/               # Vistas/Páginas principales
 │   │   │   ├── HomePage.vue     # Página de inicio
 │   │   │   ├── AboutUs.vue      # Página "Nosotros"
-│   │   │   ├── RecipeDetail.vue # Detalle de receta
+│   │   │   ├── RecipeList.vue   # Listado de recetas con búsqueda
+│   │   │   ├── RecipeSearch.vue # Búsqueda avanzada de recetas
+│   │   │   ├── RecipeDetail.vue # Detalle completo de receta
 │   │   │   └── ErrorPage404.vue # Página de error 404
-│   │   ├── services/            # Servicios de API
+│   │   ├── composables/         # Composables de Vue 3
+│   │   │   ├── recipeComposable.js       # Lógica para lista y búsqueda de recetas
+│   │   │   └── recipeDetailComposable.js # Lógica para detalle de recetas
+│   │   ├── services/            # Servicios de API (deprecated, usar composables)
 │   │   │   └── homeServices.js  # Servicios para home
 │   │   ├── router/              # Configuración de rutas
 │   │   │   └── index.js         # Rutas de Vue Router
@@ -372,11 +379,19 @@ RecetarioWeb/
 - ✅ **Vistas principales**:
   - `HomePage.vue`: Página principal con recetas destacadas
   - `AboutUs.vue`: Información sobre el proyecto
-  - `RecipeDetail.vue`: Detalle de cada receta (en desarrollo)
+  - `RecipeList.vue`: Listado completo de recetas con búsqueda y filtrado por categoría
+  - `RecipeSearch.vue`: Vista dedicada de búsqueda avanzada de recetas
+  - `RecipeDetail.vue`: Detalle completo de cada receta con toda la información
   - `ErrorPage404.vue`: Página de error personalizada
-- ✅ **Servicios API**:
-  - `homeServices.js`: Conexión con endpoints del backend
+- ✅ **Composables (Composition API)**:
+  - `recipeComposable.js`: Manejo de lista de recetas y categorías
+  - `recipeDetailComposable.js`: Obtención de detalle de recetas por slug
   - Integración con `VITE_API_URL` para consumo de API REST
+  - Manejo de estados reactivos con Vue 3 Composition API
+- ✅ **Validación de formularios**:
+  - Integración de VeeValidate para validación de formularios
+  - Soporte para esquemas de validación con Yup
+  - Componentes Form y Field para formularios reactivos
 - ✅ **Sistema de navegación**:
   - Vue Router configurado con rutas dinámicas
   - Navegación por slug para recetas
@@ -501,6 +516,8 @@ RecetarioWeb/
 - 🎨 **Vue 3.5.22** - Framework progresivo de JavaScript
 - 🗂️ **Vue Router 4.5.1** - Enrutamiento oficial para Vue.js
 - 📦 **Pinia 3.0.3** - Store oficial para Vue.js (gestión de estado)
+- ✅ **VeeValidate 4.15.1** - Validación de formularios para Vue 3
+- 📋 **@vee-validate/yup 4.15.1** - Integración de Yup con VeeValidate para esquemas de validación
 - 🧹 **ESLint 9.33.0** - Linter para JavaScript/Vue
 - 🛠️ **Vue DevTools** - Plugin de desarrollo integrado
 - 🎯 **Node.js 20.19+** o **22.12+** requerido
@@ -940,6 +957,31 @@ Ver archivo [LICENSE](LICENSE)
 
 ## 🆕 Historial de Cambios Recientes
 
+### Octubre 2025 - v3.2
+- ✅ **Mejoras en el Frontend Vue.js 3**
+  - 📋 **VeeValidate 4.15.1** integrado para validación de formularios
+  - 🔧 **@vee-validate/yup 4.15.1** para esquemas de validación declarativos
+  - 📝 Componentes `Form` y `Field` de VeeValidate en uso
+  - 🎨 Formularios reactivos con validación en tiempo real
+- ✅ **Nuevas vistas completadas**
+  - 📖 **RecipeList.vue**: Listado completo de recetas con búsqueda por categoría
+  - 🔍 **RecipeSearch.vue**: Vista dedicada de búsqueda avanzada de recetas
+  - 📄 **RecipeDetail.vue**: Vista completa de detalle de receta con toda la información
+- ✅ **Composables Vue 3 implementados**
+  - 🔄 **recipeComposable.js**: Lógica reutilizable para listar recetas y categorías
+  - 📊 **recipeDetailComposable.js**: Manejo de datos de recetas individuales por slug
+  - ⚡ Uso de Composition API con `ref`, `readonly`, `watchEffect`
+  - 🌐 Integración con endpoints del backend mediante `VITE_API_URL`
+- ✅ **Mejoras en rutas y navegación**
+  - 🔀 Rutas actualizadas en `HeaderBase.vue`: `/recipes`, `/contact`
+  - 🗺️ Nuevas rutas en router: `/recipes`, `/recipes/search`
+  - 🔗 Enlaces dinámicos a recetas por slug funcionando correctamente
+- ✅ **Experiencia de usuario mejorada**
+  - 🎯 Búsqueda por categoría y término de búsqueda
+  - 📱 Diseño responsive mantenido en todas las vistas
+  - ⚠️ Manejo de errores con redirección automática
+  - 🖼️ Visualización de imágenes de recetas optimizada
+
 ### Octubre 2025 - v3.1
 - ✅ **Frontend Vue.js 3 completamente funcional**
   - ✨ Componentes reutilizables: `HeaderBase` y `FooterBase`
@@ -1020,13 +1062,18 @@ Ver archivo [LICENSE](LICENSE)
 - ✅ PostgreSQL 18 con Docker Compose
 - ✅ CORS configurado para desarrollo y producción
 - ✅ 20 recetas de ejemplo con imágenes
+- ✅ Vista de listado de recetas con filtros
+- ✅ Vista de búsqueda avanzada de recetas por categoría
+- ✅ Vista de detalle de receta completa
+- ✅ Composables para manejo de datos reactivos
+- ✅ Integración de VeeValidate para validación de formularios
 
 ### En Desarrollo
-- 🚧 Vista de detalle de receta (RecipeDetail.vue)
-- 🚧 Sistema de búsqueda avanzada de recetas
 - 🚧 Panel de usuario para gestionar recetas propias
 - 🚧 Sistema de registro y login en el frontend
 - 🚧 Página de contacto en el frontend
+- 🚧 Validación avanzada de formularios con Yup
+- 🚧 Mejoras en la UI/UX de búsqueda de recetas
 
 ### Próximas Características
 - 📅 Sistema de favoritos
@@ -1048,4 +1095,4 @@ Las contribuciones son bienvenidas. Por favor:
 
 **Nota:** Recuerda actualizar tu archivo `.env` con valores reales antes de ejecutar la aplicación.
 
-**Última actualización:** Octubre 2025 - v3.1
+**Última actualización:** Octubre 2025 - v3.2
