@@ -13,7 +13,7 @@ import time
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 
-#from .serializers import 
+#from .serializers import
 
 
 # Create your views here.
@@ -58,7 +58,7 @@ class SecurityRegisterView(APIView):
 
         token = uuid.uuid4()
         url = f'{os.getenv("BASE_URL")}api/v1/security/verify/{token}'
-        
+
         try:
             user = User.objects.create_user(
                 username=request.data['username'],
@@ -80,7 +80,7 @@ class SecurityRegisterView(APIView):
 
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=HTTPStatus.BAD_REQUEST)
-        
+
         return JsonResponse({"message": "User registered successfully. Please verify your email.", "verification_url": url}, status=HTTPStatus.CREATED)
 
 
@@ -147,7 +147,7 @@ class SecurityLoginView(APIView):
             user = User.objects.filter(email=request.data['email']).get()
         except User.DoesNotExist:
             return JsonResponse({"error": "Invalid credentials"}, status=HTTPStatus.UNAUTHORIZED)
-        
+
         if not user.is_active:
             return JsonResponse({"error": "Account is not active. Please verify your email."}, status=HTTPStatus.UNAUTHORIZED)
 
@@ -164,7 +164,7 @@ class SecurityLoginView(APIView):
             }
             try:
                 token = jwt.encode(payload, os.getenv("SECRET_KEY"), algorithm=os.getenv("JWT_ALGORITHM"))
-                return JsonResponse({"user_id": str(user.id), "name": user.first_name, "token": token}, status=HTTPStatus.OK)
+                return JsonResponse({"user_id": str(user.id), "name": user.username, "token": token}, status=HTTPStatus.OK)
             except JWTError as e:
                 return JsonResponse({"error": "Token generation failed"}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
         else:
