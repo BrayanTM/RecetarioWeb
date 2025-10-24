@@ -175,6 +175,9 @@ La aplicación frontend estará disponible en: `http://localhost:5173`
 - 🔍 Recipe Search: `http://localhost:5173/recipes/search`
 - 📖 Recipe Detail: `http://localhost:5173/recipe/:slug` (ej: `/recipe/pastel-de-chocolate`)
 - 📧 Contact: `http://localhost:5173/contact`
+- 📝 Register: `http://localhost:5173/register`
+- 🔐 Login: `http://localhost:5173/login`
+- 👤 Panel: `http://localhost:5173/panel` (requiere autenticación)
 
 #### 4. Compilar para producción
 
@@ -345,18 +348,23 @@ RecetarioWeb/
 │   │   │   ├── RecipeSearch.vue # Búsqueda avanzada de recetas
 │   │   │   ├── RecipeDetail.vue # Detalle completo de receta
 │   │   │   ├── ContactPage.vue  # Formulario de contacto
+│   │   │   ├── RegisterPage.vue # Registro de usuarios
+│   │   │   ├── LoginPage.vue    # Inicio de sesión
+│   │   │   ├── PanelPage.vue    # Panel de usuario (requiere auth)
 │   │   │   └── ErrorPage404.vue # Página de error 404
 │   │   ├── composables/         # Composables de Vue 3
 │   │   │   ├── recipeComposable.js       # Lógica para lista y búsqueda de recetas
 │   │   │   ├── recipeDetailComposable.js # Lógica para detalle de recetas
-│   │   │   └── useContactComposable.js   # Lógica para envío de mensajes de contacto
+│   │   │   ├── useContactComposable.js   # Lógica para envío de mensajes de contacto
+│   │   │   └── useSecurityComposable.js  # Lógica para registro y login de usuarios
 │   │   ├── schemas/             # Esquemas de validación con Yup
-│   │   │   └── validationScheme.js # Esquemas para validación de formularios
+│   │   │   └── validationScheme.js # Esquemas: contact, register, login
 │   │   ├── services/            # Servicios de API (deprecated, usar composables)
 │   │   │   └── homeServices.js  # Servicios para home
 │   │   ├── router/              # Configuración de rutas
 │   │   │   └── index.js         # Rutas de Vue Router
 │   │   ├── stores/              # Stores de Pinia (gestión de estado)
+│   │   │   └── authStore.js    # Store de autenticación con JWT
 │   │   ├── App.vue              # Componente raíz de Vue
 │   │   └── main.js              # Punto de entrada de la aplicación
 │   ├── index.html               # HTML principal
@@ -379,7 +387,7 @@ RecetarioWeb/
 
 #### 🎨 Aplicación Frontend Vue.js 3
 - ✅ **Componentes reutilizables**:
-  - `HeaderBase.vue`: Barra de navegación con menú y enlaces
+  - `HeaderBase.vue`: Barra de navegación con menú y enlaces (integrado con authStore)
   - `FooterBase.vue`: Pie de página con información del desarrollador
 - ✅ **Vistas principales**:
   - `HomePage.vue`: Página principal con recetas destacadas
@@ -388,22 +396,37 @@ RecetarioWeb/
   - `RecipeSearch.vue`: Vista dedicada de búsqueda avanzada de recetas
   - `RecipeDetail.vue`: Detalle completo de cada receta con toda la información
   - `ContactPage.vue`: Formulario de contacto con validación y envío de emails
+  - `RegisterPage.vue`: Registro de usuarios con verificación de email
+  - `LoginPage.vue`: Inicio de sesión con JWT
+  - `PanelPage.vue`: Panel de usuario protegido (requiere autenticación)
   - `ErrorPage404.vue`: Página de error personalizada
 - ✅ **Composables (Composition API)**:
   - `recipeComposable.js`: Manejo de lista de recetas y categorías
   - `recipeDetailComposable.js`: Obtención de detalle de recetas por slug
   - `useContactComposable.js`: Envío de mensajes de contacto al backend
+  - `useSecurityComposable.js`: Lógica de registro y login con axios
   - Integración con `VITE_API_URL` para consumo de API REST
   - Manejo de estados reactivos con Vue 3 Composition API
+- ✅ **Gestión de Estado con Pinia**:
+  - `authStore.js`: Store de autenticación con JWT
+  - Gestión de authId, authName, authToken en localStorage
+  - Funciones: login(), logOut(), isLogin(), cerrarSesion()
+  - Persistencia de sesión entre recargas de página
 - ✅ **Validación de formularios**:
   - Integración de VeeValidate para validación de formularios
   - Soporte para esquemas de validación con Yup
   - Componentes Form, Field y ErrorMessage para formularios reactivos
-  - Esquema `contactValidationSchema` para validación de contacto
+  - Esquemas: `contactValidationSchema`, `registerValidationSchema`, `loginValidationSchema`
 - ✅ **Sistema de navegación**:
   - Vue Router configurado con rutas dinámicas
   - Navegación por slug para recetas
-  - Redirección automática a página 404
+  - **Guardas de navegación** (router.beforeEach) para proteger rutas
+  - Rutas protegidas con meta: { requiresAuth: true }
+  - Redirección automática según estado de autenticación
+- ✅ **Cliente HTTP**:
+  - Axios 1.12.2 para peticiones HTTP
+  - Configurado para trabajar con VITE_API_URL
+  - Manejo de errores y estados de carga
 - ✅ **Assets y recursos**:
   - CSS personalizado y responsive
   - Bootstrap 5 integrado
@@ -524,6 +547,7 @@ RecetarioWeb/
 - 🎨 **Vue 3.5.22** - Framework progresivo de JavaScript
 - 🗂️ **Vue Router 4.5.1** - Enrutamiento oficial para Vue.js
 - 📦 **Pinia 3.0.3** - Store oficial para Vue.js (gestión de estado)
+- 📡 **Axios 1.12.2** - Cliente HTTP basado en promesas para el navegador y Node.js
 - ✅ **VeeValidate 4.15.1** - Validación de formularios para Vue 3
 - 📋 **@vee-validate/yup 4.15.1** - Integración de Yup con VeeValidate para esquemas de validación
 - 🔍 **Yup 1.7.1** - Schema builder para validación de valores (incluido con @vee-validate/yup)
@@ -966,6 +990,43 @@ Ver archivo [LICENSE](LICENSE)
 
 ## 🆕 Historial de Cambios Recientes
 
+### Octubre 2025 - v3.4
+- ✅ **Sistema de Autenticación Completo Frontend**
+  - 🔐 **LoginPage.vue**: Página de inicio de sesión con validación
+  - 📝 **RegisterPage.vue**: Página de registro de usuarios con verificación de email
+  - 👤 **PanelPage.vue**: Panel de usuario (base para futuras funcionalidades)
+  - 🏪 **authStore.js**: Store de Pinia para gestión de estado de autenticación
+  - 🔑 Gestión de tokens JWT en localStorage
+  - 🚪 Funciones login(), logOut(), isLogin(), cerrarSesion()
+- ✅ **Composables de Seguridad**
+  - 🔐 **useLoginComposable.js**: Lógica de autenticación de usuarios
+  - 📝 **useRegisterComposable.js**: Lógica de registro de usuarios
+  - 📡 Integración con endpoints `/api/v1/security/login/` y `/api/v1/security/register/`
+  - ⚡ Manejo de estados de carga y errores
+  - 🔄 Redirección automática después de login exitoso
+- ✅ **Axios 1.12.2 integrado**
+  - 📡 Cliente HTTP para comunicación con API REST
+  - 🌐 Reemplaza fetch nativo para mejor manejo de peticiones
+  - 🔧 Configurado para trabajar con VITE_API_URL
+- ✅ **Validación de Autenticación**
+  - 📋 **loginValidationSchema**: Validación de email y contraseña
+  - 📋 **registerValidationSchema**: Validación completa de registro
+    - Username (3-150 caracteres, solo letras, números y @/./+/-/_)
+    - First Name y Last Name (2-150 caracteres)
+    - Email (formato válido, máx. 254 caracteres)
+    - Password (6-128 caracteres)
+    - Password confirmation (debe coincidir)
+- ✅ **Protección de Rutas con Vue Router**
+  - 🛡️ **router.beforeEach**: Guard de navegación para proteger rutas
+  - 🔒 Rutas protegidas: `/panel` (requiere autenticación)
+  - 🚫 Rutas públicas: `/login`, `/register` (solo para usuarios no autenticados)
+  - 🔄 Redirección automática según estado de autenticación
+- ✅ **Mejoras en HeaderBase**
+  - 🔗 Enlaces de Login, Register y Panel integrados
+  - 👤 Saludo personalizado: "Hi [nombre]" cuando está autenticado
+  - 🚪 Botón de logout con confirmación
+  - 🎯 Navegación condicional según authToken
+
 ### Octubre 2025 - v3.3
 - ✅ **Página de Contacto completa implementada**
   - 📧 **ContactPage.vue**: Formulario de contacto completamente funcional
@@ -1085,11 +1146,17 @@ Ver archivo [LICENSE](LICENSE)
 ### Funcionalidades Completadas
 - ✅ Backend Django REST Framework completamente funcional
 - ✅ Frontend Vue.js 3 con múltiples vistas y componentes
-- ✅ Sistema de autenticación JWT con verificación de email
+- ✅ Sistema de autenticación JWT con verificación de email (backend + frontend)
+- ✅ **Sistema completo de Login y Registro en frontend**
+  - ✅ Formularios con validación robusta (VeeValidate + Yup)
+  - ✅ Integración con authStore (Pinia) para gestión de sesión
+  - ✅ Composables useLoginComposable y useRegisterComposable
+  - ✅ Guardas de navegación para proteger rutas
+  - ✅ Persistencia de sesión con localStorage
 - ✅ CRUD completo de recetas y categorías
 - ✅ Sistema de contacto con notificaciones por email
 - ✅ **Página de contacto completamente funcional en frontend**
-- ✅ **Formulario de contacto con validación robusta (VeeValidate + Yup)**
+- ✅ **Axios 1.12.2** integrado como cliente HTTP
 - ✅ Documentación Swagger/OpenAPI interactiva
 - ✅ PostgreSQL 18 con Docker Compose
 - ✅ CORS configurado para desarrollo y producción
@@ -1097,25 +1164,26 @@ Ver archivo [LICENSE](LICENSE)
 - ✅ Vista de listado de recetas con filtros
 - ✅ Vista de búsqueda avanzada de recetas por categoría
 - ✅ Vista de detalle de receta completa
-- ✅ Composables para manejo de datos reactivos (recipes, contact)
+- ✅ Composables para manejo de datos reactivos (recipes, contact, security)
 - ✅ Integración de VeeValidate para validación de formularios
-- ✅ Esquemas de validación con Yup implementados
+- ✅ Esquemas de validación con Yup implementados (contact, login, register)
+- ✅ Panel de usuario base (PanelPage) con ruta protegida
 
 ### En Desarrollo
-- 🚧 Panel de usuario para gestionar recetas propias
-- 🚧 Sistema de registro y login en el frontend
+- 🚧 Panel de usuario para gestionar recetas propias (CRUD de recetas del usuario)
 - 🚧 Mejoras en la UI/UX de búsqueda de recetas
 - 🚧 Notificaciones toast/snackbar para feedback de usuario
+- 🚧 Perfil de usuario editable
 
 ### Próximas Características
-- 📅 Sistema de registro y login en el frontend
-- 📅 Panel de usuario para gestionar recetas propias
 - 📅 Sistema de favoritos
 - 📅 Comentarios y valoraciones en recetas
 - 📅 Compartir recetas en redes sociales
 - 📅 Filtros avanzados de búsqueda (tiempo, dificultad, ingredientes)
-- 📅 Perfil de usuario completo
-- 📅 Notificaciones toast/snackbar para mejor feedback
+- 📅 Perfil de usuario completo con avatar
+- 📅 Dashboard de estadísticas de usuario
+- 📅 Sistema de notificaciones en tiempo real
+- 📅 Modo oscuro / Temas personalizables
 
 ## 🤝 Contribuciones
 
@@ -1130,4 +1198,4 @@ Las contribuciones son bienvenidas. Por favor:
 
 **Nota:** Recuerda actualizar tu archivo `.env` con valores reales antes de ejecutar la aplicación.
 
-**Última actualización:** Octubre 2025 - v3.3
+**Última actualización:** Octubre 2025 - v3.4
