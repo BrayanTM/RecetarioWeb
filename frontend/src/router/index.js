@@ -1,3 +1,4 @@
+import { useAuthStore } from '@/stores/authStore';
 import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
@@ -34,11 +35,39 @@ const router = createRouter({
       name: 'contact',
     },
     {
+      path: '/register',
+      component: () => import('@/views/RegisterPage.vue'),
+      name: 'register',
+      meta: { requiresAuth: false },
+    },
+    {
+      path: '/login',
+      component: () => import('@/views/LoginPage.vue'),
+      name: 'login',
+      meta: { requiresAuth: false },
+    },
+    {
+      path: '/panel',
+      component: () => import('@/views/PanelPage.vue'),
+      name: 'panel',
+      meta: { requiresAuth: true },
+    },
+    {
       path: '/:pathMatch(.*)*',
       component: () => import('@/views/ErrorPage404.vue'),
       name: 'error404',
     }
   ],
 })
+
+router.beforeEach((to, from)=> {
+  const authStore = useAuthStore();
+  if (to.meta.requiresAuth) {
+    authStore.isLogin();
+  }
+  if (to.meta.requiresAuth === false && authStore.authToken != null) {
+    return { name: 'error404' };
+  }
+});
 
 export default router
