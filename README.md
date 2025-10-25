@@ -398,10 +398,13 @@ RecetarioWeb/
   - `ContactPage.vue`: Formulario de contacto con validación y envío de emails
   - `RegisterPage.vue`: Registro de usuarios con verificación de email
   - `LoginPage.vue`: Inicio de sesión con JWT
-  - `PanelPage.vue`: Panel de usuario protegido (requiere autenticación)
+  - `PanelPage.vue`: Panel de usuario con CRUD completo de recetas propias
   - `ErrorPage404.vue`: Página de error personalizada
 - ✅ **Composables (Composition API)**:
   - `recipeComposable.js`: Manejo de lista de recetas y categorías
+  - `useCreateRecipe`: Crear recetas con autenticación JWT
+  - `useUpdateRecipe`: Actualizar recetas existentes
+  - `useDeleteRecipe`: Eliminar recetas con confirmación
   - `recipeDetailComposable.js`: Obtención de detalle de recetas por slug
   - `useContactComposable.js`: Envío de mensajes de contacto al backend
   - `useSecurityComposable.js`: Lógica de registro y login con axios
@@ -416,7 +419,7 @@ RecetarioWeb/
   - Integración de VeeValidate para validación de formularios
   - Soporte para esquemas de validación con Yup
   - Componentes Form, Field y ErrorMessage para formularios reactivos
-  - Esquemas: `contactValidationSchema`, `registerValidationSchema`, `loginValidationSchema`
+  - Esquemas: `contactValidationSchema`, `registerValidationSchema`, `loginValidationSchema`, `recipeValidationSchema`, `recipeUpdateValidationSchema`
 - ✅ **Sistema de navegación**:
   - Vue Router configurado con rutas dinámicas
   - Navegación por slug para recetas
@@ -432,6 +435,7 @@ RecetarioWeb/
   - Bootstrap 5 integrado
   - Imágenes y fuentes optimizadas
   - JavaScript para interactividad (menú, carruseles, etc.)
+  - Fancybox para galerías de imágenes con zoom y navegación
 
 #### 📖 Documentación Automática con Swagger/OpenAPI
 - ✅ **drf-yasg** integrado para documentación automática
@@ -551,6 +555,7 @@ RecetarioWeb/
 - ✅ **VeeValidate 4.15.1** - Validación de formularios para Vue 3
 - 📋 **@vee-validate/yup 4.15.1** - Integración de Yup con VeeValidate para esquemas de validación
 - 🔍 **Yup 1.7.1** - Schema builder para validación de valores (incluido con @vee-validate/yup)
+- 🖼️ **@fancyapps/ui 6.1.0** - Librería moderna para lightbox/galería de imágenes con zoom y navegación
 - 🧹 **ESLint 9.33.0** - Linter para JavaScript/Vue
 - 🛠️ **Vue DevTools** - Plugin de desarrollo integrado
 - 🎯 **Node.js 20.19+** o **22.12+** requerido
@@ -990,6 +995,40 @@ Ver archivo [LICENSE](LICENSE)
 
 ## 🆕 Historial de Cambios Recientes
 
+### Octubre 2025 - v3.5
+- ✅ **Panel de Usuario Completo (CRUD de Recetas)**
+  - 📋 **PanelPage.vue**: Panel completamente funcional para gestionar recetas del usuario
+  - ✏️ Crear, editar y eliminar recetas propias
+  - 📊 Tabla con todas las recetas del usuario
+  - 🖼️ Galería de imágenes con Fancybox para vista previa
+  - 🔒 Integración completa con JWT para operaciones protegidas
+- ✅ **Nuevos Composables de Recetas**
+  - 🆕 **useCreateRecipe**: Crear recetas con autenticación JWT
+  - ✏️ **useUpdateRecipe**: Actualizar recetas existentes
+  - 🗑️ **useDeleteRecipe**: Eliminar recetas con confirmación
+  - 📡 Todos con manejo de errores y mensajes de éxito
+  - 🔄 Sistema de mensajes (clearMessages) para limpiar estados
+- ✅ **Validación de Formularios de Recetas**
+  - 📝 **recipeValidationSchema**: Validación completa para crear recetas
+    - Name (3-200 caracteres)
+    - Category (selección válida requerida)
+    - Time (requerido)
+    - Description (mínimo 10 caracteres)
+  - ✏️ **recipeUpdateValidationSchema**: Validación para actualizar
+    - Picture es opcional en edición (mantiene imagen actual)
+- ✅ **Fancybox Integration**
+  - 📦 **@fancyapps/ui 6.1.0**: Librería para galería de imágenes
+  - 🖼️ Vista previa elegante de imágenes de recetas
+  - 🔍 Zoom y navegación entre imágenes
+  - 📱 Responsive y touch-friendly
+- ✅ **Mejoras en la Experiencia de Usuario**
+  - ⏳ Indicadores de carga durante operaciones
+  - ✅ Mensajes de éxito/error con cierre manual
+  - 🔄 Recarga automática de datos después de CRUD
+  - 🎨 Modal personalizado para crear/editar recetas
+  - 🖼️ Vista previa de imagen actual al editar
+  - ⚠️ Confirmación antes de eliminar recetas
+
 ### Octubre 2025 - v3.4
 - ✅ **Sistema de Autenticación Completo Frontend**
   - 🔐 **LoginPage.vue**: Página de inicio de sesión con validación
@@ -1042,10 +1081,11 @@ Ver archivo [LICENSE](LICENSE)
   - 🎨 Imágenes actualizadas: favicon y logo optimizados
   - 📬 Email de contacto genérico para ejemplo: `yourmail@gmail.com`
 - ✅ **Validación de formularios robusta**
-  - ✅ Validación de nombre (mínimo 2 caracteres)
-  - ✅ Validación de email (formato válido)
-  - ✅ Validación de teléfono (solo números y caracteres válidos)
-  - ✅ Validación de mensaje (mínimo 10 caracteres)
+  - ✅ Validación de contacto (nombre, email, teléfono, mensaje)
+  - ✅ Validación de registro (username, nombres, email, contraseñas)
+  - ✅ Validación de login (email, contraseña)
+  - ✅ Validación de recetas (nombre, categoría, tiempo, descripción)
+  - ✅ Validación de actualización de recetas (imagen opcional)
   - 🔴 Mensajes de error contextuales con `ErrorMessage`
 
 ### Octubre 2025 - v3.2
@@ -1060,7 +1100,13 @@ Ver archivo [LICENSE](LICENSE)
   - 📄 **RecipeDetail.vue**: Vista completa de detalle de receta con toda la información
 - ✅ **Composables Vue 3 implementados**
   - 🔄 **recipeComposable.js**: Lógica reutilizable para listar recetas y categorías
+  - 🆕 **useCreateRecipe**: Composable para crear recetas con JWT
+  - ✏️ **useUpdateRecipe**: Composable para actualizar recetas existentes
+  - 🗑️ **useDeleteRecipe**: Composable para eliminar recetas
   - 📊 **recipeDetailComposable.js**: Manejo de datos de recetas individuales por slug
+  - 🔐 **useLoginComposable.js**: Lógica de autenticación de usuarios
+  - 📝 **useRegisterComposable.js**: Lógica de registro de usuarios
+  - 📧 **useContactComposable.js**: Envío de mensajes de contacto
   - ⚡ Uso de Composition API con `ref`, `readonly`, `watchEffect`
   - 🌐 Integración con endpoints del backend mediante `VITE_API_URL`
 - ✅ **Mejoras en rutas y navegación**
@@ -1085,6 +1131,7 @@ Ver archivo [LICENSE](LICENSE)
   - 🔗 Enlaces dinámicos a recetas por slug
   - 🎭 Animaciones CSS con Animate.css
   - 🎯 Font Awesome para iconografía
+  - 🖼️ Fancybox para galerías de imágenes interactivas
 - ✅ **Contenido dinámico de recetas**
   - 🖼️ 20 imágenes de ejemplo de recetas en `backend/uploads/recipes/`
   - 📊 Datos de prueba para desarrollo (tacos, sushi, pancakes, etc.)
@@ -1164,26 +1211,26 @@ Ver archivo [LICENSE](LICENSE)
 - ✅ Vista de listado de recetas con filtros
 - ✅ Vista de búsqueda avanzada de recetas por categoría
 - ✅ Vista de detalle de receta completa
-- ✅ Composables para manejo de datos reactivos (recipes, contact, security)
-- ✅ Integración de VeeValidate para validación de formularios
-- ✅ Esquemas de validación con Yup implementados (contact, login, register)
-- ✅ Panel de usuario base (PanelPage) con ruta protegida
-
-### En Desarrollo
-- 🚧 Panel de usuario para gestionar recetas propias (CRUD de recetas del usuario)
-- 🚧 Mejoras en la UI/UX de búsqueda de recetas
-- 🚧 Notificaciones toast/snackbar para feedback de usuario
-- 🚧 Perfil de usuario editable
+  - ✅ Composables para manejo de datos reactivos (recipes, contact, security)
+  - ✅ Integración de VeeValidate para validación de formularios
+  - ✅ Esquemas de validación con Yup implementados (contact, login, register, recipe)
+  - ✅ Panel de usuario completo con CRUD de recetas (crear, editar, eliminar)
+  - ✅ Fancybox integrado para galería de imágenes interactiva### En Desarrollo
+- 🚧 Mejoras en la UI/UX del panel de usuario
+- 🚧 Notificaciones toast/snackbar más sofisticadas
+- 🚧 Paginación para lista de recetas
+- 🚧 Filtros adicionales de búsqueda
 
 ### Próximas Características
 - 📅 Sistema de favoritos
 - 📅 Comentarios y valoraciones en recetas
 - 📅 Compartir recetas en redes sociales
-- 📅 Filtros avanzados de búsqueda (tiempo, dificultad, ingredientes)
-- 📅 Perfil de usuario completo con avatar
+- 📅 Filtros avanzados de búsqueda (dificultad, ingredientes)
+- 📅 Perfil de usuario completo con avatar editable
 - 📅 Dashboard de estadísticas de usuario
 - 📅 Sistema de notificaciones en tiempo real
 - 📅 Modo oscuro / Temas personalizables
+- 📅 Importar/exportar recetas en diferentes formatos
 
 ## 🤝 Contribuciones
 
@@ -1198,4 +1245,4 @@ Las contribuciones son bienvenidas. Por favor:
 
 **Nota:** Recuerda actualizar tu archivo `.env` con valores reales antes de ejecutar la aplicación.
 
-**Última actualización:** Octubre 2025 - v3.4
+**Última actualización:** Octubre 2025 - v3.5
