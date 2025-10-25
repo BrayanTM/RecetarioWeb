@@ -1,8 +1,82 @@
 # RecetarioWeb 🍳
 
 [![CI (Django)](https://github.com/BrayanTM/RecetarioWeb/actions/workflows/django-ci.yml/badge.svg)](https://github.com/BrayanTM/RecetarioWeb/actions/workflows/django-ci.yml)
+[![Python](https://img.shields.io/badge/Python-3.12+-3776AB?style=flat&logo=python&logoColor=white)](https://www.python.org/)
+[![Django](https://img.shields.io/badge/Django-5.2.7-092E20?style=flat&logo=django&logoColor=white)](https://www.djangoproject.com/)
+[![Vue.js](https://img.shields.io/badge/Vue.js-3.5.22-4FC08D?style=flat&logo=vue.js&logoColor=white)](https://vuejs.org/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?style=flat&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-Aplicación web de recetas desarrollada con Django REST Framework y PostgreSQL. Sistema completo para gestionar recetas de cocina con categorías, imágenes y búsqueda avanzada.
+## 📖 Descripción del Proyecto
+
+**RecetarioWeb** es una aplicación web full-stack moderna y robusta diseñada para **gestionar, compartir y descubrir recetas de cocina**. El proyecto combina un backend potente desarrollado con **Django REST Framework** y un frontend interactivo construido con **Vue.js 3**, ofreciendo una experiencia de usuario fluida y profesional.
+
+### ✨ Características Principales
+
+- 🔐 **Sistema de autenticación completo** con JWT (JSON Web Tokens)
+- ✉️ **Verificación de email** mediante Mailtrap API para activación de cuentas
+- 📝 **CRUD completo de recetas** con soporte para imágenes
+- 🎨 **Panel de usuario personalizado** para gestionar recetas propias
+- 🔍 **Búsqueda avanzada** por categorías y términos
+- 📧 **Formulario de contacto** con notificaciones por email
+- 📚 **Documentación interactiva** de la API con Swagger/OpenAPI
+- 🖼️ **Galería de imágenes** con Fancybox (zoom y navegación)
+- 📱 **Diseño responsive** compatible con todos los dispositivos
+- 🚀 **Desplegado en producción** (Vercel + Render + Neon)
+
+### 🏗️ Arquitectura
+
+El proyecto sigue una arquitectura **cliente-servidor** desacoplada:
+
+- **Backend (API REST)**: Django 5.2.7 + Django REST Framework 3.16.1 + PostgreSQL 16
+- **Frontend (SPA)**: Vue.js 3.5.22 + Vite 7.1.7 + Vue Router + Pinia
+- **Autenticación**: JWT con tokens de 24 horas
+- **Base de Datos**: PostgreSQL (local con Docker, producción en Neon)
+- **Emails**: Mailtrap API para envíos transaccionales
+- **Documentación**: Swagger/OpenAPI con drf-yasg
+
+### 🎯 Casos de Uso
+
+- **Usuarios**: Registrarse, crear y compartir recetas personales
+- **Búsqueda**: Encontrar recetas por categoría (postres, bebidas, platos principales, etc.)
+- **Gestión**: Editar y eliminar recetas propias desde el panel de usuario
+- **Contacto**: Enviar mensajes al administrador del sitio
+- **Exploración**: Navegar por recetas destacadas y aleatorias
+
+## 🛠️ Stack Tecnológico
+
+### Backend
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![Django](https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=white)
+![Django REST Framework](https://img.shields.io/badge/DRF-ff1709?style=for-the-badge&logo=django&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![JWT](https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=JSON%20web%20tokens&logoColor=white)
+
+### Frontend
+![Vue.js](https://img.shields.io/badge/Vue.js-35495E?style=for-the-badge&logo=vue.js&logoColor=4FC08D)
+![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
+![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
+![Bootstrap](https://img.shields.io/badge/Bootstrap-563D7C?style=for-the-badge&logo=bootstrap&logoColor=white)
+
+### DevOps & Herramientas
+![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
+![Render](https://img.shields.io/badge/Render-46E3B7?style=for-the-badge&logo=render&logoColor=white)
+![Neon](https://img.shields.io/badge/Neon-00E699?style=for-the-badge&logo=neon&logoColor=white)
+![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white)
+![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=white)
+![ESLint](https://img.shields.io/badge/ESLint-4B32C3?style=for-the-badge&logo=eslint&logoColor=white)
+
+## 🌐 Proyecto en Producción
+
+Este proyecto está **desplegado y en funcionamiento** en producción:
+
+- **Frontend**: Desplegado en [Vercel](https://vercel.com) 🚀
+- **Backend**: Desplegado en [Render](https://render.com) 🌟
+- **Base de Datos**: PostgreSQL en [Neon](https://neon.tech) 🐘
+- **Emails**: Envío mediante [Mailtrap API](https://mailtrap.io) 📧
 
 ## 📋 Requisitos
 
@@ -10,7 +84,7 @@ Aplicación web de recetas desarrollada con Django REST Framework y PostgreSQL. 
 - Python 3.12+
 - Git
 - pip (gestor de paquetes de Python)
-- **Docker Desktop** (para PostgreSQL 18)
+- **Docker Desktop** (para PostgreSQL local, opcional en desarrollo)
 - virtualenv o venv (para entorno virtual)
 
 ### Frontend
@@ -199,38 +273,227 @@ Esto iniciará un servidor local para previsualizar la versión de producción.
 
 La aplicación utiliza SMTP para enviar correos electrónicos cuando un usuario envía un mensaje a través del formulario de contacto.
 
-### Configuración para Desarrollo (Mailtrap)
+### Configuración para Desarrollo
 
 1. Crea una cuenta gratuita en [Mailtrap.io](https://mailtrap.io/)
-2. En tu inbox de Mailtrap, ve a **SMTP Settings**
-3. Copia las credenciales y agrégalas a tu archivo `.env`:
+2. Ve a tu inbox de Mailtrap
+3. Copia tu **API Token** desde la sección de configuración
+4. Agrega las credenciales a tu archivo `.env`:
 
 ```bash
-SMTP_SERVER=sandbox.smtp.mailtrap.io
-SMTP_PORT=2525
-SMTP_USERNAME=tu_usuario_mailtrap
-SMTP_PASSWORD=tu_contraseña_mailtrap
+# Mailtrap API Configuration
+MAILTRAP_API_TOKEN=tu_token_api_de_mailtrap
+DOMAIN=example.com
 ```
+
+**Nota**: En desarrollo, usa `DOMAIN=example.com` o tu dominio local. En producción, usa tu dominio real.
 
 ### Configuración para Producción
 
-Para producción, puedes usar servicios como:
-- **Gmail** (con contraseña de aplicación)
-- **SendGrid**
-- **AWS SES**
-- **Mailgun**
+Para producción, Mailtrap ofrece una API robusta para envío transaccional de emails:
 
-Ejemplo con Gmail:
 ```bash
-SMTP_SERVER=smtp.gmail.com
-SMTP_PORT=587
-SMTP_USERNAME=tu_email@gmail.com
-SMTP_PASSWORD=tu_contraseña_de_aplicacion
+# Production Mailtrap Configuration
+MAILTRAP_API_TOKEN=tu_token_api_produccion
+DOMAIN=tudominio.com
 ```
 
-**Nota:** Para Gmail, necesitas crear una [contraseña de aplicación](https://support.google.com/accounts/answer/185833).
+### Variables de Entorno Requeridas
 
-## 🔒 Seguridad
+- `MAILTRAP_API_TOKEN`: Token de API de Mailtrap (requerido)
+- `DOMAIN`: Dominio desde el que se envían los emails (opcional, por defecto: example.com)
+
+### Migración desde SMTP
+
+**Cambios importantes**: El proyecto migró de SMTP tradicional a la API de Mailtrap para mayor confiabilidad y simplicidad.
+
+**Antes (SMTP - deprecado)**:
+```python
+# Configuración SMTP antigua (ya no se usa)
+SMTP_SERVER=sandbox.smtp.mailtrap.io
+SMTP_PORT=2525
+SMTP_USERNAME=usuario
+SMTP_PASSWORD=contraseña
+```
+
+**Ahora (Mailtrap API)**:
+```python
+# Nueva configuración con API
+import mailtrap as mt
+client = mt.MailtrapClient(token=os.getenv('MAILTRAP_API_TOKEN'))
+client.send(mail)
+```
+
+**Ventajas de la API**:
+- ✅ Más confiable y rápido
+- ✅ Mejor entregabilidad de emails
+- ✅ Configuración más simple (solo token)
+- ✅ Métricas y seguimiento mejorados
+- ✅ Sin necesidad de configurar SMTP
+- ✅ Soporte nativo para templates HTML
+
+## � Despliegue en Producción
+
+El proyecto está actualmente desplegado en producción usando las siguientes plataformas:
+
+### Frontend - Vercel
+
+**Plataforma**: [Vercel](https://vercel.com)
+
+**Características**:
+- ✅ Despliegue automático desde Git
+- ✅ CDN global para rendimiento óptimo
+- ✅ HTTPS automático
+- ✅ Preview deployments para cada PR
+
+**Variables de entorno en Vercel**:
+```bash
+VITE_API_URL=https://tu-backend.onrender.com/api/v1/
+VITE_APP_TITLE=RecetarioWeb - Cookbook
+```
+
+**Pasos de despliegue**:
+1. Conecta tu repositorio a Vercel
+2. Configura el directorio raíz: `frontend`
+3. Framework preset: Vite
+4. Build command: `npm run build`
+5. Output directory: `dist`
+6. Agrega las variables de entorno
+
+### Backend - Render
+
+**Plataforma**: [Render](https://render.com)
+
+**Características**:
+- ✅ Despliegue automático desde Git
+- ✅ SSL/TLS gratuito
+- ✅ Health checks automáticos
+- ✅ Escalado automático
+
+**Variables de entorno en Render**:
+```bash
+SECRET_KEY=tu-secret-key-produccion
+DEBUG=False
+DJANGO_ALLOWED_HOSTS=tu-backend.onrender.com
+BASE_URL=https://tu-backend.onrender.com/
+BASE_URL_FRONTEND=https://tu-frontend.vercel.app/
+JWT_ALGORITHM=HS256
+CORS_ORIGIN_WHITELIST=https://tu-frontend.vercel.app
+DATABASE_URL=tu-url-de-neon-postgres
+MAILTRAP_API_TOKEN=tu-token-api-produccion
+DOMAIN=tudominio.com
+PYTHON_VERSION=3.12.0
+```
+
+**Pasos de despliegue**:
+1. Crea un nuevo Web Service en Render
+2. Conecta tu repositorio
+3. Root directory: `backend`
+4. Build command: `pip install -r requirements.txt`
+5. Start command: `gunicorn backend.wsgi:application`
+6. Agrega todas las variables de entorno
+7. Crea un servicio de tipo "Web Service"
+
+**Archivos adicionales requeridos**:
+- `requirements.txt`: Ya incluido con todas las dependencias
+- Considera agregar `gunicorn` a `requirements.txt` para producción
+
+### Base de Datos - Neon
+
+**Plataforma**: [Neon](https://neon.tech)
+
+**Características**:
+- ✅ PostgreSQL serverless
+- ✅ Escalado automático
+- ✅ Backups automáticos
+- ✅ Tier gratuito generoso
+
+**Configuración**:
+1. Crea un proyecto en Neon
+2. Crea una base de datos
+3. Copia la connection string (DATABASE_URL)
+4. Agrega la URL a las variables de entorno de Render
+
+**Formato de la URL**:
+```bash
+postgres://usuario:password@host.region.neon.tech/database?sslmode=require
+```
+
+### Emails - Mailtrap
+
+**Plataforma**: [Mailtrap](https://mailtrap.io)
+
+**Configuración en Producción**:
+1. Crea una cuenta en Mailtrap
+2. Configura tu dominio de envío (opcional pero recomendado)
+3. Obtén tu API Token desde la sección "API Tokens"
+4. Agrega el token a las variables de entorno:
+   - `MAILTRAP_API_TOKEN=tu-token-produccion`
+   - `DOMAIN=tudominio.com`
+
+**Características**:
+- ✅ API confiable para envío transaccional
+- ✅ Métricas y analytics de emails
+- ✅ Testing de emails en sandbox
+- ✅ Sin configuración SMTP compleja
+
+### Checklist de Despliegue
+
+Antes de desplegar a producción, asegúrate de:
+
+**Backend**:
+- [ ] `DEBUG=False` en variables de entorno
+- [ ] `SECRET_KEY` única y segura generada
+- [ ] `ALLOWED_HOSTS` configurado con dominio de Render
+- [ ] `CORS_ORIGIN_WHITELIST` con dominio de Vercel
+- [ ] `DATABASE_URL` apuntando a Neon
+- [ ] `MAILTRAP_API_TOKEN` configurado
+- [ ] Ejecutar migraciones: `python manage.py migrate`
+- [ ] Recopilar archivos estáticos si es necesario
+- [ ] Verificar logs de despliegue en Render
+
+**Frontend**:
+- [ ] `VITE_API_URL` apuntando al backend de Render
+- [ ] Build exitoso en Vercel
+- [ ] CORS funcionando correctamente
+- [ ] Probar autenticación JWT
+- [ ] Verificar carga de imágenes desde backend
+
+**Base de Datos**:
+- [ ] Migraciones aplicadas
+- [ ] Conexión SSL habilitada
+- [ ] Backups configurados
+- [ ] Datos de prueba cargados (opcional)
+
+**Emails**:
+- [ ] Token de Mailtrap configurado
+- [ ] Dominio verificado (producción)
+- [ ] Probar envío de emails de verificación
+- [ ] Probar envío de emails de contacto
+
+### Monitoreo y Mantenimiento
+
+**Render**:
+- Revisa los logs regularmente
+- Configura alertas de salud
+- Monitorea uso de recursos
+
+**Vercel**:
+- Revisa analytics de visitas
+- Monitorea tiempos de carga
+- Configura alertas de build fallidos
+
+**Neon**:
+- Monitorea uso de almacenamiento
+- Revisa conexiones activas
+- Configura backups programados
+
+**Mailtrap**:
+- Revisa métricas de entrega
+- Monitorea bounce rate
+- Verifica logs de envío
+
+## �🔒 Seguridad
 
 - ✅ **NO** commitees el archivo `.env` a git
 - ✅ Usa SECRET_KEY únicas para cada entorno
@@ -239,6 +502,9 @@ SMTP_PASSWORD=tu_contraseña_de_aplicacion
 - ✅ **Autenticación JWT**: Los endpoints críticos están protegidos con JSON Web Tokens
 - ✅ **Verificación de email**: Los usuarios deben verificar su correo antes de acceder
 - ✅ **Tokens de corta duración**: Los JWT expiran en 24 horas para mayor seguridad
+- ✅ **SSL/TLS**: Todo el tráfico en producción usa HTTPS
+- ✅ **Variables de entorno**: Todas las credenciales están en variables de entorno
+- ✅ **CORS configurado**: Solo orígenes autorizados pueden acceder a la API
 
 ## 🧪 Pruebas
 
@@ -566,7 +832,7 @@ RecetarioWeb/
 - **Django REST Framework 3.16.1** - API REST
 - **drf-yasg 1.21.11** - Generación automática de documentación Swagger/OpenAPI
 - **django-cors-headers 4.9.0** - Gestión de CORS (Cross-Origin Resource Sharing)
-- **PostgreSQL 16** - Base de datos
+- **PostgreSQL 16** - Base de datos (Neon en producción)
 - **psycopg2-binary 2.9.11** - Adaptador PostgreSQL
 - **django-autoslug 1.9.9** - Generación automática de slugs
 - **python-dotenv 1.1.1** - Gestión de variables de entorno
@@ -575,6 +841,7 @@ RecetarioWeb/
 - **ecdsa 0.19.1** - Algoritmos de firma digital para JWT
 - **rsa 4.9.1** - Criptografía RSA para JWT
 - **pyasn1 0.6.1** - Soporte ASN.1 para criptografía
+- **mailtrap 2.3.0** - Cliente API de Mailtrap para envío de emails transaccionales
 
 ### GitHub Actions
 
@@ -995,6 +1262,29 @@ Ver archivo [LICENSE](LICENSE)
 
 ## 🆕 Historial de Cambios Recientes
 
+### Octubre 2025 - v4.0 🚀 PRODUCCIÓN
+- ✅ **Despliegue en Producción Completo**
+  - 🌐 **Frontend desplegado en Vercel**: Despliegue automático desde Git con CDN global
+  - 🖥️ **Backend desplegado en Render**: Web service con SSL/TLS y health checks
+  - 🐘 **Base de datos en Neon**: PostgreSQL serverless con backups automáticos
+  - 📧 **Emails con Mailtrap API**: Migración de SMTP a API para mayor confiabilidad
+- ✅ **Migración de SMTP a Mailtrap API**
+  - 📦 **mailtrap 2.3.0**: Nueva dependencia para envío de emails
+  - 🔄 **utilities.py actualizado**: Implementación completa con Mailtrap API
+  - 🗑️ Eliminadas variables SMTP deprecadas (SMTP_SERVER, SMTP_PORT, SMTP_USERNAME, SMTP_PASSWORD)
+  - 🆕 Nuevas variables: `MAILTRAP_API_TOKEN` y `DOMAIN`
+  - ✨ Ventajas: Mayor confiabilidad, configuración simplificada, métricas mejoradas
+- ✅ **Configuración de Producción**
+  - 📝 **.env.example actualizado**: Variables para despliegue en Vercel, Render y Neon
+  - 📚 **README actualizado**: Guía completa de despliegue con checklist
+  - 🔒 Configuración de seguridad mejorada (CORS, ALLOWED_HOSTS, SSL/TLS)
+  - 🌍 Variables de entorno específicas para producción documentadas
+- ✅ **Documentación de Despliegue**
+  - 📖 Sección completa sobre despliegue en producción
+  - ✅ Checklist de verificación pre-despliegue
+  - 🛠️ Guías paso a paso para Vercel, Render, Neon y Mailtrap
+  - 📊 Sección de monitoreo y mantenimiento
+
 ### Octubre 2025 - v3.5
 - ✅ **Panel de Usuario Completo (CRUD de Recetas)**
   - 📋 **PanelPage.vue**: Panel completamente funcional para gestionar recetas del usuario
@@ -1245,4 +1535,10 @@ Las contribuciones son bienvenidas. Por favor:
 
 **Nota:** Recuerda actualizar tu archivo `.env` con valores reales antes de ejecutar la aplicación.
 
-**Última actualización:** Octubre 2025 - v3.5
+**🚀 Estado del proyecto**: En producción activa
+- Frontend: Desplegado en Vercel
+- Backend: Desplegado en Render
+- Base de datos: PostgreSQL en Neon
+- Emails: Mailtrap API
+
+**Última actualización:** Octubre 2025 - v4.0 (Despliegue en Producción)

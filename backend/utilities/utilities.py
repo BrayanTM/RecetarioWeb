@@ -1,24 +1,31 @@
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-from email.mime.base import MIMEBase
-from email import encoders
+import mailtrap as mt
 import os
 
 
 def send_email(html, subject, to_email):
-    message = MIMEMultipart('alternative')
-    message['Subject'] = subject
-    message['From'] = os.getenv('SMTP_USERNAME')
-    message['To'] = to_email
+    """
+    Envía un correo electrónico usando la API de Mailtrap.
 
-    # Attach the HTML content
-    message.attach(MIMEText(html, 'html'))
-
+    Args:
+        html (str): Contenido HTML del correo
+        subject (str): Asunto del correo
+        to_email (str): Dirección de correo del destinatario
+    """
     try:
-        with smtplib.SMTP(os.getenv('SMTP_SERVER'), os.getenv('SMTP_PORT')) as server:
-            server.starttls()
-            server.login(os.getenv('SMTP_USERNAME'), os.getenv('SMTP_PASSWORD'))
-            server.sendmail(message['From'], message['To'], message.as_string())
+        # Configurar el correo
+        mail = mt.Mail(
+            sender=mt.Address(
+                email=f"noreply@{os.getenv('DOMAIN', 'example.com')}",
+                name="RecetarioWeb"
+            ),
+            to=[mt.Address(email=to_email)],
+            subject=subject,
+            html=html,
+        )
+
+        # Crear cliente y enviar
+        client = mt.MailtrapClient(token=os.getenv('MAILTRAP_API_TOKEN'))
+        client.send(mail)
+
     except Exception as e:
         print(f"Error sending email: {e}")
