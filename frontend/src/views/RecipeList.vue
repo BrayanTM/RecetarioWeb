@@ -50,7 +50,7 @@ let send = () => {
 
               <div class="col-12 col-lg-4">
                 <Field as="select" v-model="category_id" class="form-control" name="category_id" id="category_id">
-                  <option value="0">Selection.....</option>
+                  <option value="0" disabled>Select a category</option>
                   <option v-for="(category, i) in categories.categories" :key="i" :value="category.id">{{ category.name
                     }}</option>
                 </Field>

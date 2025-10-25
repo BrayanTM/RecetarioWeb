@@ -37,7 +37,7 @@ watchEffect(() => {
     <div class="container">
       <div class="row">
         <div class="col-12">
-          <img :src="dataRecipes.recipe?.picture_url" :alt="dataRecipes.recipe?.name" />
+          <img :src="dataRecipes.recipe?.picture_url" :alt="dataRecipes.recipe?.name" style="height: 300px;" />
         </div>
       </div>
     </div>
