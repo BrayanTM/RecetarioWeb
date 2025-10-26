@@ -1,7 +1,8 @@
 from rest_framework import serializers
 from .models import Recipe
 from categories.models import Category
-import os
+import cloudinary
+import cloudinary.utils
 
 
 class RecipeSerializer(serializers.ModelSerializer):
@@ -22,5 +23,6 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     def get_picture_url(self, obj):
         if obj.picture:
-            return f"{os.getenv('BASE_URL')}uploads/recipes/{obj.picture}"
+            # Generar URL segura desde Cloudinary
+            return cloudinary.utils.cloudinary_url(obj.picture)[0]
         return None

@@ -1,10 +1,11 @@
 from rest_framework.views import APIView
 from django.http import JsonResponse
-from django.core.files.storage import FileSystemStorage
 from django.contrib.auth.models import User
 from http import HTTPStatus
 from datetime import datetime
 import os
+import cloudinary
+import cloudinary.uploader
 from .models import Recipe
 from .serializers import RecipeSerializer
 from security.decorators import logging_decorator
@@ -15,7 +16,7 @@ from drf_yasg.utils import swagger_auto_schema
 
 # Create your views here.
 class RecipeListView(APIView):
-    
+
     @swagger_auto_schema(
         operation_description="Get all recipes ordered by ID (descending)",
         responses={
@@ -104,17 +105,12 @@ class RecipeListView(APIView):
     def post(self, request):
         # Validar el archivo antes de procesarlo
         uploaded_file = request.FILES.get('file')
-        
+
         if not uploaded_file:
             return JsonResponse({'error': 'No file provided.'}, status=HTTPStatus.BAD_REQUEST)
-        
+
         if uploaded_file.content_type not in ['image/jpeg', 'image/png'] or uploaded_file.size <= 0:
             return JsonResponse({'error': 'Invalid file type. Only JPEG and PNG are allowed.'}, status=HTTPStatus.BAD_REQUEST)
-
-        # Generar nombre único para el archivo (pero NO guardarlo todavía)
-        timestamp = datetime.now().timestamp()
-        extension = os.path.splitext(uploaded_file.name)[1]
-        filename = f"{int(timestamp)}{extension}"
 
         # Obtener el usuario del token JWT
         auth_header = request.headers.get('Authorization').split(' ')
@@ -127,16 +123,29 @@ class RecipeListView(APIView):
         # Validar los datos del request (sin picture ni user)
         serializer = RecipeSerializer(data=request.data)
         if serializer.is_valid():
-            # Solo si la validación es exitosa, guardar la imagen
-            fs = FileSystemStorage()
-            fs.save(f"recipes/{filename}", uploaded_file)
-            
-            # Guardar la receta con los campos controlados por el servidor
-            user = User.objects.get(pk=user_id)
-            recipe = serializer.save(user=user, picture=filename)
-            return JsonResponse({'recipe': RecipeSerializer(recipe).data}, status=HTTPStatus.CREATED)
-        
-        # Si la validación falla, NO se guarda la imagen
+            # Solo si la validación es exitosa, subir la imagen a Cloudinary
+            try:
+                # Generar nombre único para el archivo
+                timestamp = datetime.now().timestamp()
+                extension = os.path.splitext(uploaded_file.name)[1].replace('.', '')
+                public_id = f"recipes/{int(timestamp)}"
+
+                # Subir imagen a Cloudinary
+                upload_result = cloudinary.uploader.upload(
+                    uploaded_file,
+                    public_id=public_id,
+                    folder="recipes",
+                    resource_type="image"
+                )
+
+                # Guardar la receta con el public_id de Cloudinary
+                user = User.objects.get(pk=user_id)
+                recipe = serializer.save(user=user, picture=upload_result['public_id'])
+                return JsonResponse({'recipe': RecipeSerializer(recipe).data}, status=HTTPStatus.CREATED)
+            except Exception as e:
+                return JsonResponse({'error': f'Error uploading image: {str(e)}'}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
+
+        # Si la validación falla, NO se sube la imagen
         return JsonResponse({'errors': serializer.errors}, status=HTTPStatus.BAD_REQUEST)
 
 
@@ -230,45 +239,54 @@ class RecipeDetailView(APIView):
     def put(self, request, pk):
         try:
             recipe = Recipe.objects.get(pk=pk)
-            
+
             # Manejar la subida de archivo si existe
             uploaded_file = request.FILES.get('file')
-            filename = None
+            new_public_id = None
             old_picture = recipe.picture  # Guardar referencia a la imagen antigua
-            
+
             if uploaded_file:
                 # Verificar que el archivo sea válido y tenga contenido
                 if uploaded_file.content_type not in ['image/jpeg', 'image/png'] or uploaded_file.size <= 0:
                     return JsonResponse({'error': 'Invalid file type. Only JPEG and PNG are allowed.'}, status=HTTPStatus.BAD_REQUEST)
-                
-                # Generar nombre único para el archivo (pero NO guardarlo todavía)
-                timestamp = datetime.now().timestamp()
-                extension = os.path.splitext(uploaded_file.name)[1]
-                filename = f"{int(timestamp)}{extension}"
-            
+
             # Validar los datos del request (sin picture)
             serializer = RecipeSerializer(recipe, data=request.data, partial=True)
             if serializer.is_valid():
                 # Solo si la validación es exitosa, procesar la imagen
-                if filename:
-                    # Eliminar archivo anterior si existe
-                    if old_picture:
-                        old_file_path = f"uploads/recipes/{old_picture}"
-                        if os.path.exists(old_file_path):
-                            os.remove(old_file_path)
-                    
-                    # Guardar el nuevo archivo
-                    fs = FileSystemStorage()
-                    fs.save(f"recipes/{filename}", uploaded_file)
-                    
-                    # Guardar con el nuevo nombre de archivo
-                    serializer.save(picture=filename)
+                if uploaded_file:
+                    try:
+                        # Generar nombre único para el archivo
+                        timestamp = datetime.now().timestamp()
+                        public_id = f"recipes/{int(timestamp)}"
+
+                        # Subir nueva imagen a Cloudinary
+                        upload_result = cloudinary.uploader.upload(
+                            uploaded_file,
+                            public_id=public_id,
+                            folder="recipes",
+                            resource_type="image"
+                        )
+
+                        new_public_id = upload_result['public_id']
+
+                        # Eliminar imagen anterior de Cloudinary si existe
+                        if old_picture:
+                            try:
+                                cloudinary.uploader.destroy(old_picture, resource_type="image")
+                            except Exception as e:
+                                print(f"Error deleting old image from Cloudinary: {str(e)}")
+
+                        # Guardar con el nuevo public_id
+                        serializer.save(picture=new_public_id)
+                    except Exception as e:
+                        return JsonResponse({'error': f'Error uploading image: {str(e)}'}, status=HTTPStatus.INTERNAL_SERVER_ERROR)
                 else:
                     # Guardar sin modificar la imagen
                     serializer.save()
-                
+
                 return JsonResponse({'recipe': serializer.data}, status=HTTPStatus.OK)
-            
+
             # Si la validación falla, NO se modifica la imagen
             return JsonResponse({'errors': serializer.errors}, status=HTTPStatus.BAD_REQUEST)
         except Recipe.DoesNotExist:
@@ -303,13 +321,14 @@ class RecipeDetailView(APIView):
     def delete(self, request, pk):
         try:
             recipe = Recipe.objects.get(pk=pk)
-            
-            # Eliminar archivo físico si existe
+
+            # Eliminar imagen de Cloudinary si existe
             if recipe.picture:
-                file_path = f"uploads/recipes/{recipe.picture}"
-                if os.path.exists(file_path):
-                    os.remove(file_path)
-            
+                try:
+                    cloudinary.uploader.destroy(recipe.picture, resource_type="image")
+                except Exception as e:
+                    print(f"Error deleting image from Cloudinary: {str(e)}")
+
             recipe.delete()
             return JsonResponse({'message': 'Recipe deleted successfully'}, status=HTTPStatus.OK)
         except Recipe.DoesNotExist:

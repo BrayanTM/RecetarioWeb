@@ -52,6 +52,7 @@ El proyecto sigue una arquitectura **cliente-servidor** desacoplada:
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 ![JWT](https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=JSON%20web%20tokens&logoColor=white)
+![Cloudinary](https://img.shields.io/badge/Cloudinary-3448C5?style=for-the-badge&logo=cloudinary&logoColor=white)
 
 ### Frontend
 ![Vue.js](https://img.shields.io/badge/Vue.js-35495E?style=for-the-badge&logo=vue.js&logoColor=4FC08D)
@@ -65,6 +66,7 @@ El proyecto sigue una arquitectura **cliente-servidor** desacoplada:
 ![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
 ![Render](https://img.shields.io/badge/Render-46E3B7?style=for-the-badge&logo=render&logoColor=white)
 ![Neon](https://img.shields.io/badge/Neon-00E699?style=for-the-badge&logo=neon&logoColor=white)
+![Cloudinary](https://img.shields.io/badge/Cloudinary-3448C5?style=for-the-badge&logo=cloudinary&logoColor=white)
 ![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white)
 ![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=white)
 ![ESLint](https://img.shields.io/badge/ESLint-4B32C3?style=for-the-badge&logo=eslint&logoColor=white)
@@ -76,6 +78,7 @@ Este proyecto está **desplegado y en funcionamiento** en producción:
 - **Frontend**: Desplegado en [Vercel](https://vercel.com) 🚀
 - **Backend**: Desplegado en [Render](https://render.com) 🌟
 - **Base de Datos**: PostgreSQL en [Neon](https://neon.tech) 🐘
+- **Almacenamiento de Imágenes**: [Cloudinary](https://cloudinary.com) 🖼️
 - **Emails**: Envío mediante [Mailtrap API](https://mailtrap.io) 📧
 
 ## 📋 Requisitos
@@ -86,6 +89,7 @@ Este proyecto está **desplegado y en funcionamiento** en producción:
 - pip (gestor de paquetes de Python)
 - **Docker Desktop** (para PostgreSQL local, opcional en desarrollo)
 - virtualenv o venv (para entorno virtual)
+- **Cuenta de Cloudinary** (para almacenamiento de imágenes, gratuita disponible)
 
 ### Frontend
 - Node.js 20.19.0+ o 22.12.0+
@@ -158,6 +162,7 @@ Asegúrate de configurar también en tu `.env`:
 - `JWT_ALGORITHM`: Algoritmo para JWT, usa `HS256`
 - `CORS_ORIGIN_WHITELIST`: Lista de orígenes permitidos para CORS (separados por comas)
 - `CORS_ORIGIN_REGEX_WHITELIST`: Patrones regex para orígenes CORS dinámicos
+- `CLOUDINARY_URL`: URL de configuración de Cloudinary (ver siguiente sección)
 
 #### 5. Iniciar PostgreSQL con Docker
 
@@ -380,6 +385,7 @@ BASE_URL_FRONTEND=https://tu-frontend.vercel.app/
 JWT_ALGORITHM=HS256
 CORS_ORIGIN_WHITELIST=https://tu-frontend.vercel.app
 DATABASE_URL=tu-url-de-neon-postgres
+CLOUDINARY_URL=cloudinary://api_key:api_secret@cloud_name
 MAILTRAP_API_TOKEN=tu-token-api-produccion
 DOMAIN=tudominio.com
 PYTHON_VERSION=3.12.0
@@ -419,6 +425,25 @@ PYTHON_VERSION=3.12.0
 postgres://usuario:password@host.region.neon.tech/database?sslmode=require
 ```
 
+### Almacenamiento de Imágenes - Cloudinary
+
+**Plataforma**: [Cloudinary](https://cloudinary.com)
+
+**Configuración en Producción**:
+1. Crea una cuenta en Cloudinary
+2. Ve a Dashboard > Settings > API Keys
+3. Copia tu Cloudinary URL
+4. Agrega la URL a las variables de entorno de Render:
+   - `CLOUDINARY_URL=cloudinary://api_key:api_secret@cloud_name`
+
+**Características**:
+- ✅ Almacenamiento persistente en la nube
+- ✅ CDN global para entrega rápida
+- ✅ Optimización automática de imágenes
+- ✅ Transformaciones en tiempo real
+- ✅ Backup automático de imágenes
+- ✅ Plan gratuito generoso (25 créditos/mes)
+
 ### Emails - Mailtrap
 
 **Plataforma**: [Mailtrap](https://mailtrap.io)
@@ -447,6 +472,7 @@ Antes de desplegar a producción, asegúrate de:
 - [ ] `ALLOWED_HOSTS` configurado con dominio de Render
 - [ ] `CORS_ORIGIN_WHITELIST` con dominio de Vercel
 - [ ] `DATABASE_URL` apuntando a Neon
+- [ ] `CLOUDINARY_URL` configurado con credenciales de producción
 - [ ] `MAILTRAP_API_TOKEN` configurado
 - [ ] Ejecutar migraciones: `python manage.py migrate`
 - [ ] Recopilar archivos estáticos si es necesario
@@ -457,13 +483,20 @@ Antes de desplegar a producción, asegúrate de:
 - [ ] Build exitoso en Vercel
 - [ ] CORS funcionando correctamente
 - [ ] Probar autenticación JWT
-- [ ] Verificar carga de imágenes desde backend
+- [ ] Verificar carga de imágenes desde Cloudinary
 
 **Base de Datos**:
 - [ ] Migraciones aplicadas
 - [ ] Conexión SSL habilitada
 - [ ] Backups configurados
 - [ ] Datos de prueba cargados (opcional)
+
+**Cloudinary**:
+- [ ] CLOUDINARY_URL configurado
+- [ ] Probar subida de imágenes
+- [ ] Verificar generación de URLs de imágenes
+- [ ] Probar eliminación de imágenes
+- [ ] Monitorear uso de créditos en dashboard
 
 **Emails**:
 - [ ] Token de Mailtrap configurado
@@ -487,6 +520,11 @@ Antes de desplegar a producción, asegúrate de:
 - Monitorea uso de almacenamiento
 - Revisa conexiones activas
 - Configura backups programados
+
+**Cloudinary**:
+- Monitorea uso de créditos y almacenamiento
+- Revisa analytics de transformaciones
+- Verifica rendimiento de CDN
 
 **Mailtrap**:
 - Revisa métricas de entrega
@@ -841,6 +879,7 @@ RecetarioWeb/
 - **ecdsa 0.19.1** - Algoritmos de firma digital para JWT
 - **rsa 4.9.1** - Criptografía RSA para JWT
 - **pyasn1 0.6.1** - Soporte ASN.1 para criptografía
+- **cloudinary 1.41.0** - SDK de Cloudinary para almacenamiento de imágenes en la nube
 - **mailtrap 2.3.0** - Cliente API de Mailtrap para envío de emails transaccionales
 
 ### GitHub Actions
@@ -1262,6 +1301,34 @@ Ver archivo [LICENSE](LICENSE)
 
 ## 🆕 Historial de Cambios Recientes
 
+### Octubre 2025 - v4.1 🖼️ CLOUDINARY
+- ✅ **Migración a Cloudinary para Almacenamiento de Imágenes**
+  - 🖼️ **Cloudinary 1.41.0**: Nueva dependencia para almacenamiento en la nube
+  - 🔄 **Migración completa**: De `FileSystemStorage` local a Cloudinary
+  - 🗑️ Eliminado uso de `django.core.files.storage.FileSystemStorage`
+  - 📝 **settings.py actualizado**: Configuración de Cloudinary con `CLOUDINARY_URL`
+  - 🔧 **recipes/views.py refactorizado**: 
+    - POST: `cloudinary.uploader.upload()` para subir imágenes
+    - PUT: Actualización de imágenes con eliminación de la anterior
+    - DELETE: `cloudinary.uploader.destroy()` para eliminar imágenes
+  - 🔗 **recipes/serializers.py actualizado**: Generación de URLs con `cloudinary.utils.cloudinary_url()`
+  - 📚 **Documentación completa**: [CLOUDINARY_MIGRATION.md](backend/docs/CLOUDINARY_MIGRATION.md)
+- ✅ **Beneficios de la Migración**
+  - 💾 **Persistencia**: Las imágenes no se pierden en Render (almacenamiento efímero resuelto)
+  - 🌍 **CDN Global**: Entrega rápida desde servidores cercanos al usuario
+  - ⚡ **Optimización**: Compresión y transformaciones automáticas
+  - 🔄 **Escalabilidad**: Sin límites de almacenamiento según plan
+  - 🔒 **Backup**: Cloudinary mantiene backups automáticos
+- ✅ **Configuración Actualizada**
+  - 🆕 Nueva variable de entorno: `CLOUDINARY_URL`
+  - 📝 `.env.example` actualizado con instrucciones de Cloudinary
+  - 📖 README ampliado con sección completa de Cloudinary
+  - ✅ Checklist de despliegue actualizado
+- ✅ **Estructura de Almacenamiento**
+  - 📁 Carpeta en Cloudinary: `recipes/`
+  - 🏷️ Public IDs: `recipes/{timestamp}`
+  - 🔗 URLs generadas dinámicamente por Cloudinary
+
 ### Octubre 2025 - v4.0 🚀 PRODUCCIÓN
 - ✅ **Despliegue en Producción Completo**
   - 🌐 **Frontend desplegado en Vercel**: Despliegue automático desde Git con CDN global
@@ -1539,6 +1606,7 @@ Las contribuciones son bienvenidas. Por favor:
 - Frontend: Desplegado en Vercel
 - Backend: Desplegado en Render
 - Base de datos: PostgreSQL en Neon
+- Almacenamiento de Imágenes: Cloudinary
 - Emails: Mailtrap API
 
-**Última actualización:** Octubre 2025 - v4.0 (Despliegue en Producción)
+**Última actualización:** Octubre 2025 - v4.1 (Migración a Cloudinary)
