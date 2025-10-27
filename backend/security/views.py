@@ -58,7 +58,7 @@ class SecurityRegisterView(APIView):
 
         token = uuid.uuid4()
         # Security improvement: URL points to frontend, not backend API
-        url = f'{os.getenv("BASE_URL_FRONTEND")}verify-email?token={token}'
+        url = f'{os.getenv("BASE_URL_FRONTEND")}/verify-email?token={token}'
 
         try:
             user = User.objects.create_user(
