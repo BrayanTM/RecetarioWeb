@@ -595,7 +595,8 @@ Estas imágenes se utilizan para **desarrollo y pruebas**. En producción, los u
 RecetarioWeb/
 ├── .github/
 │   └── workflows/
-│       └── django-ci.yml        # GitHub Actions CI/CD
+│       ├── django-ci.yml        # GitHub Actions CI/CD Backend
+│       └── frontend-ci.yml      # GitHub Actions CI/CD Frontend
 ├── backend/
 │   ├── backend/                 # Configuración Django
 │   │   ├── settings.py          # Configuración principal
@@ -889,11 +890,24 @@ RecetarioWeb/
 
 ### GitHub Actions
 
-El proyecto incluye CI/CD con GitHub Actions que:
-- ✅ Verifica la configuración de Django
-- ✅ Ejecuta migraciones
-- ✅ Ejecuta tests (cuando estén configurados)
+El proyecto incluye CI/CD con GitHub Actions para ambos, backend y frontend:
+
+**Backend (Django CI)**:
+- ✅ Verifica la configuración de Django con `--deploy`
+- ✅ Ejecuta migraciones de la base de datos
+- ✅ Ejecuta tests unitarios
 - ✅ Se ejecuta en cada push a `main` y en pull requests
+
+**Frontend (Vue.js CI)**:
+- ✅ Instala dependencias con npm
+- ✅ Ejecuta linter (ESLint) para verificar calidad de código
+- ✅ Compila el proyecto con Vite
+- ✅ Verifica que la compilación sea exitosa
+- ✅ Se ejecuta en Node.js 20.x y 22.x (matrix strategy)
+- ✅ Se ejecuta en cada push a `main`, `dev` y en pull requests
+
+[![CI (Django)](https://github.com/BrayanTM/RecetarioWeb/actions/workflows/django-ci.yml/badge.svg)](https://github.com/BrayanTM/RecetarioWeb/actions/workflows/django-ci.yml)
+[![CI (Frontend)](https://github.com/BrayanTM/RecetarioWeb/actions/workflows/frontend-ci.yml/badge.svg)](https://github.com/BrayanTM/RecetarioWeb/actions/workflows/frontend-ci.yml)
 
 ## 🔗 Endpoints de la API
 
@@ -1323,6 +1337,19 @@ cp .env.example .env
 Ver archivo [LICENSE](LICENSE)
 
 ## 🆕 Historial de Cambios Recientes
+
+### Octubre 2025 - v4.2.1 🔄 CI/CD FRONTEND
+- ✅ **GitHub Actions para Frontend**
+  - 🔧 **frontend-ci.yml**: Nuevo workflow para CI/CD del frontend
+  - 🧪 **Matrix strategy**: Testing en Node.js 20.x y 22.x
+  - 📦 **Install dependencies**: Instalación con npm ci
+  - 🔍 **ESLint**: Verificación de calidad de código
+  - 🏗️ **Build verification**: Compilación con Vite y verificación de dist/
+  - ✅ **Triggers**: Se ejecuta en push a `main`, `dev` y en pull requests
+- ✅ **Documentación actualizada**
+  - 📊 **Badges**: Agregados badges de CI para backend y frontend
+  - 📝 **README**: Sección de GitHub Actions ampliada con detalles de ambos workflows
+  - 🗂️ **Estructura**: Actualizada la estructura del proyecto con frontend-ci.yml
 
 ### Octubre 2025 - v4.2 ✉️ VERIFICACIÓN DE EMAIL
 - ✅ **Sistema de Verificación de Email Mejorado**
