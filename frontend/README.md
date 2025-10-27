@@ -42,3 +42,15 @@ npm run build
 ```sh
 npm run lint
 ```
+
+## Email Verification Flow
+
+- Frontend route: `/verify-email/:token?`
+- Accepts token via either path param (`:token`) or query (`?token=...` or `?t=...`). Optionally supports `uid` via `?uid=` or `?u=` if your backend requires both.
+- The page will call `${VITE_API_URL}security/verify-email/` using POST with JSON `{ token, uid }`. If POST is not supported, it falls back to GET with query params.
+- On success, a success message is shown with a quick link to the login page.
+
+Update your backend to redirect verification emails to one of the following URLs:
+
+- `https://<your-frontend-domain>/verify-email/<token>`
+- or `https://<your-frontend-domain>/verify-email?token=<token>[&uid=<uid>]`

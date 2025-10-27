@@ -10,6 +10,11 @@ const router = createRouter({
       name: 'home',
     },
     {
+      path: '/verify-email/:token?',
+      component: () => import('@/views/VerifyEmail.vue'),
+      name: 'verifyEmail',
+    },
+    {
       path: '/about-us',
       component: () => import('@/views/AboutUs.vue'),
       name: 'aboutUs',

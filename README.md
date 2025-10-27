@@ -256,6 +256,7 @@ La aplicación frontend estará disponible en: `http://localhost:5173`
 - 📧 Contact: `http://localhost:5173/contact`
 - 📝 Register: `http://localhost:5173/register`
 - 🔐 Login: `http://localhost:5173/login`
+- ✉️ Verify Email: `http://localhost:5173/verify-email?token=<uuid>` (desde email)
 - 👤 Panel: `http://localhost:5173/panel` (requiere autenticación)
 
 #### 4. Compilar para producción
@@ -481,9 +482,11 @@ Antes de desplegar a producción, asegúrate de:
 **Frontend**:
 - [ ] `VITE_API_URL` apuntando al backend de Render
 - [ ] Build exitoso en Vercel
+- [ ] **vercel.json** configurado para SPA routing
 - [ ] CORS funcionando correctamente
 - [ ] Probar autenticación JWT
 - [ ] Verificar carga de imágenes desde Cloudinary
+- [ ] Probar flujo completo de verificación de email
 
 **Base de Datos**:
 - [ ] Migraciones aplicadas
@@ -654,15 +657,16 @@ RecetarioWeb/
 │   │   │   ├── ContactPage.vue  # Formulario de contacto
 │   │   │   ├── RegisterPage.vue # Registro de usuarios
 │   │   │   ├── LoginPage.vue    # Inicio de sesión
+│   │   │   ├── VerifyEmail.vue  # Verificación de email (nuevo en v4.2)
 │   │   │   ├── PanelPage.vue    # Panel de usuario (requiere auth)
 │   │   │   └── ErrorPage404.vue # Página de error 404
 │   │   ├── composables/         # Composables de Vue 3
 │   │   │   ├── recipeComposable.js       # Lógica para lista y búsqueda de recetas
 │   │   │   ├── recipeDetailComposable.js # Lógica para detalle de recetas
 │   │   │   ├── useContactComposable.js   # Lógica para envío de mensajes de contacto
-│   │   │   └── useSecurityComposable.js  # Lógica para registro y login de usuarios
+│   │   │   └── useSecurityComposable.js  # Lógica para registro, login y verificación
 │   │   ├── schemas/             # Esquemas de validación con Yup
-│   │   │   └── validationScheme.js # Esquemas: contact, register, login
+│   │   │   └── validationScheme.js # Esquemas: contact, register, login, recipe
 │   │   ├── services/            # Servicios de API (deprecated, usar composables)
 │   │   │   └── homeServices.js  # Servicios para home
 │   │   ├── router/              # Configuración de rutas
@@ -676,6 +680,7 @@ RecetarioWeb/
 │   ├── package.json             # Dependencias de Node.js
 │   ├── eslint.config.js         # Configuración de ESLint
 │   ├── jsconfig.json            # Configuración de JavaScript
+│   ├── vercel.json              # Configuración de Vercel (SPA routing)
 │   ├── .env.example             # Plantilla de variables de entorno
 │   └── README.md                # Documentación del frontend
 ├── docker-compose.yml           # Configuración PostgreSQL
@@ -782,7 +787,7 @@ RecetarioWeb/
 
 **Seguridad y Autenticación** (`/api/v1/security/`)
 - ✅ POST - Registro de usuarios con verificación por email (`/api/v1/security/register/`)
-- ✅ GET - Verificación de email mediante token (`/api/v1/security/verify/<token>/`)
+- ✅ GET - Verificación de email mediante token query parameter (`/api/v1/security/verify/?uid=<token>`)
 - ✅ POST - Login de usuarios con generación de JWT (`/api/v1/security/login/`)
 - ✅ Decorador JWT para proteger endpoints (aplicado en rutas de recetas)
 
@@ -1031,11 +1036,29 @@ POST /api/v1/security/register/
 
 #### Verificación de Email
 ```bash
-GET /api/v1/security/verify/<token>/
+GET /api/v1/security/verify/?uid=<token>
 
-# Este endpoint es llamado automáticamente cuando el usuario hace clic
-# en el enlace del email de verificación. Redirige al frontend después
-# de activar la cuenta.
+# Este endpoint es llamado cuando el usuario hace clic en el enlace
+# del email de verificación. Devuelve una respuesta JSON.
+
+# Respuesta exitosa:
+{
+  "success": true,
+  "message": "Email verified successfully! You can now log in to your account.",
+  "user": {
+    "id": "123",
+    "username": "juanperez",
+    "email": "juan@example.com"
+  }
+}
+
+# Respuesta de error:
+{
+  "success": false,
+  "error": "Invalid or expired verification token. Please request a new verification email."
+}
+
+# Nota: El frontend muestra estos mensajes en la vista VerifyEmail.vue
 ```
 
 #### Login
@@ -1301,6 +1324,28 @@ Ver archivo [LICENSE](LICENSE)
 
 ## 🆕 Historial de Cambios Recientes
 
+### Octubre 2025 - v4.2 ✉️ VERIFICACIÓN DE EMAIL
+- ✅ **Sistema de Verificación de Email Mejorado**
+  - 📧 **VerifyEmail.vue**: Nueva vista dedicada para verificación de email
+  - 🔄 **Endpoint actualizado**: Cambio de path parameter a query parameter (`?token=uid`)
+  - 📝 **Respuesta JSON estructurada**: El endpoint ahora devuelve JSON con `success`, `message` y `user`
+  - 🎯 **URL amigable al frontend**: `/verify-email?token={uuid}` en lugar de `/api/v1/security/verify/{uuid}/`
+  - ✨ **UX mejorada**: Mensajes claros de éxito/error con estados de carga
+  - 🔗 **Integración completa**: Composable `useVerifyEmailComposable` consume el nuevo formato
+- ✅ **Mejoras en Breadcrumbs**
+  - 🖼️ **Rutas absolutas**: Corrección de rutas de imágenes de fondo en breadcrumbs
+  - 📝 Afectó: RegisterPage, LoginPage, PanelPage, VerifyEmail, RecipeSearch, RecipeList, HomePage
+  - 🎨 Cambio de `url(img/bg-img/...)` a `url(/img/bg-img/...)` para correcta visualización
+  - ✅ Breadcrumbs ahora cargan correctamente en todas las páginas
+- ✅ **Configuración de Vercel**
+  - 📄 **vercel.json**: Archivo de configuración para despliegue en Vercel
+  - 🔄 Rewrite rules para SPA: Todas las rutas redirigen a `index.html`
+  - 🌐 Soporte completo para Vue Router en producción
+- ✅ **Mejoras en Seguridad**
+  - 🔒 **Query parameters**: Tokens de verificación ahora en query string (más estándar)
+  - 📊 **Respuestas estructuradas**: Formato consistente con campo `success` para validación rápida
+  - ⚠️ **Mensajes descriptivos**: Errores más informativos para mejor debugging
+
 ### Octubre 2025 - v4.1 🖼️ CLOUDINARY
 - ✅ **Migración a Cloudinary para Almacenamiento de Imágenes**
   - 🖼️ **Cloudinary 1.41.0**: Nueva dependencia para almacenamiento en la nube
@@ -1390,6 +1435,7 @@ Ver archivo [LICENSE](LICENSE)
 - ✅ **Sistema de Autenticación Completo Frontend**
   - 🔐 **LoginPage.vue**: Página de inicio de sesión con validación
   - 📝 **RegisterPage.vue**: Página de registro de usuarios con verificación de email
+  - ✉️ **VerifyEmail.vue**: Vista de verificación de email (añadida en v4.2)
   - 👤 **PanelPage.vue**: Panel de usuario (base para futuras funcionalidades)
   - 🏪 **authStore.js**: Store de Pinia para gestión de estado de autenticación
   - 🔑 Gestión de tokens JWT en localStorage
@@ -1609,4 +1655,4 @@ Las contribuciones son bienvenidas. Por favor:
 - Almacenamiento de Imágenes: Cloudinary
 - Emails: Mailtrap API
 
-**Última actualización:** Octubre 2025 - v4.1 (Migración a Cloudinary)
+**Última actualización:** Octubre 2025 - v4.2 (Sistema de Verificación de Email Mejorado)
