@@ -2,6 +2,9 @@ import axios from "axios";
 import { ref } from "vue";
 import { useAuthStore } from "@/stores/authStore";
 
+// --------------------------------
+// Register Composable
+// --------------------------------
 export function useRegisterComposable() {
   const loading = ref(false);
   const error = ref(null);
@@ -78,6 +81,9 @@ export function useRegisterComposable() {
   return { sendData, loading, error, success };
 }
 
+// --------------------------------
+// Login Composable
+// --------------------------------
 export function useLoginComposable() {
   const loading = ref(false);
   const error = ref(null);
@@ -153,4 +159,65 @@ export function useLoginComposable() {
   };
 
   return { login, loading, error, success };
+}
+
+// --------------------------------
+// Verify Email Composable
+// --------------------------------
+export function useVerifyEmailComposable() {
+  const loading = ref(false);
+  const error = ref(null);
+  const success = ref(false);
+  const message = ref("");
+
+  const verify = async ({ uid }) => {
+    loading.value = true;
+    error.value = null;
+    success.value = false;
+    message.value = "";
+
+    const baseUrl = `${import.meta.env.VITE_API_URL}security/verify/`;
+
+    try {
+      const response = await axios.get(baseUrl, {
+        params: { uid },
+      });
+
+      success.value = true;
+      message.value = response.data.message || "Email verified successfully!";
+      return {
+        success: true,
+        message: message.value,
+        data: response.data,
+      };
+    } catch (err) {
+      if (err.response) {
+        const errorMessage = err.response.data.error || "Email verification failed. Please try again.";
+        error.value = errorMessage;
+
+        return {
+          success: false,
+          message: errorMessage,
+          error: errorMessage,
+        };
+      } else if (err.request) {
+        error.value = "No response from server. Please check your connection.";
+        return {
+          success: false,
+          message: "No response from server. Please check your connection.",
+        };
+      } else {
+        error.value = "An unexpected error occurred.";
+        return {
+          success: false,
+          message: "An unexpected error occurred.",
+        };
+      }
+    } finally {
+      loading.value = false;
+    }
+  };
+
+  return { verify, loading, error, success, message };
+
 }

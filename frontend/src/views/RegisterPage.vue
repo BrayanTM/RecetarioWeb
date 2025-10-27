@@ -61,7 +61,7 @@ let send = async () => {
 
 <template>
   <HeaderBase />
-  <div className="breadcumb-area bg-img bg-overlay mb-5" style="background-image: url(img/bg-img/breadcumb6.jpg)">
+  <div className="breadcumb-area bg-img bg-overlay mb-5" style="background-image: url(/img/bg-img/breadcumb5.jpg)">
     <div className="container h-100">
       <div className="row h-100 align-items-center">
         <div className="col-12">
