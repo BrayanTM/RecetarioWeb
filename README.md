@@ -13,7 +13,7 @@
 
 > Tomar en consideración que el backend tarda al rededor de 30 segundos en iniciar debido a que este se encuentra alojado en la capa gratuita de Render. Luego de 30 segundos refresca la página para poder visualizar las recetas, registrarte, iniciar sesión...
 
-[Cookbook](cookbook-bice-eight.vercel.app/)
+[Cookbook](https://cookbook-bice-eight.vercel.app/)
 
 ### ✨ Características Principales
 
