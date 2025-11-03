@@ -1655,17 +1655,6 @@ Ver archivo [LICENSE](LICENSE)
 - 🚧 Paginación para lista de recetas
 - 🚧 Filtros adicionales de búsqueda
 
-### Próximas Características
-- 📅 Sistema de favoritos
-- 📅 Comentarios y valoraciones en recetas
-- 📅 Compartir recetas en redes sociales
-- 📅 Filtros avanzados de búsqueda (dificultad, ingredientes)
-- 📅 Perfil de usuario completo con avatar editable
-- 📅 Dashboard de estadísticas de usuario
-- 📅 Sistema de notificaciones en tiempo real
-- 📅 Modo oscuro / Temas personalizables
-- 📅 Importar/exportar recetas en diferentes formatos
-
 ## 🤝 Contribuciones
 
 Las contribuciones son bienvenidas. Por favor:
