@@ -13,7 +13,7 @@ ecdsa==0.19.1
 gunicorn==23.0.0
 idna==3.11
 inflection==0.5.1
-mailtrap==2.3.0
+mailtrap==2.4.0
 packaging==25.0
 psycopg2-binary==2.9.11
 pyasn1==0.6.1
